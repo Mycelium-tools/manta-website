@@ -24,12 +24,6 @@ export default function Home() {
             >
               Methodology
             </Link>
-            <Link
-              href="#findings"
-              className="text-sm font-medium text-[#5c6b5c] transition-colors hover:text-[#2d5a3d]"
-            >
-              Findings
-            </Link>
             <a
               href="https://huggingface.co/datasets/Mycelium-AI/MANTA"
               target="_blank"
@@ -47,10 +41,7 @@ export default function Home() {
         <section className="relative flex min-h-screen flex-col items-center justify-center px-6 pt-24 pb-32">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_20%,#2d5a3d1a,transparent)]" />
           <div className="relative mx-auto max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#2d5a3d]/30 bg-[#2d5a3d]/8 px-4 py-1.5 text-sm font-medium text-[#2d5a3d]">
-              A Mycelium benchmark
-            </div>
-            <h1 className="mt-6 font-serif text-5xl font-semibold tracking-tight text-[#1a1f1a] sm:text-6xl md:text-7xl">
+            <h1 className="font-serif text-5xl font-semibold tracking-tight text-[#1a1f1a] sm:text-6xl md:text-7xl">
               MANTA
             </h1>
             <p className="mt-4 font-serif text-xl text-[#5c6b5c] sm:text-2xl">
@@ -278,198 +269,15 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Findings */}
-        <section
-          id="findings"
-          className="border-t border-[#1a1f1a]/10 bg-[#f0ede8] px-6 py-24"
-        >
+        {/* Donate */}
+        <section className="border-t border-[#1a1f1a]/10 px-6 py-24">
           <div className="mx-auto max-w-4xl">
             <h2 className="font-serif text-3xl font-semibold text-[#1a1f1a] sm:text-4xl">
-              Key findings
+              Support MANTA
             </h2>
             <p className="mt-4 max-w-2xl text-lg text-[#5c6b5c]">
-              Early evaluations on frontier models reveal consistent patterns in
-              how animal welfare reasoning holds — and fails — under pressure.
+              [Donation details coming soon.]
             </p>
-
-            {/* Score callout */}
-            <div className="mt-10 flex flex-wrap gap-6">
-              <div className="rounded-2xl border border-[#1a1f1a]/10 bg-white p-6 shadow-sm">
-                <div className="font-serif text-4xl font-semibold text-[#2d5a3d]">
-                  0.788
-                </div>
-                <div className="mt-1 font-medium text-[#1a1f1a]">
-                  Mean score (3-turn)
-                </div>
-                <p className="mt-1 text-sm text-[#5c6b5c]">
-                  claude-sonnet-4 · 15 scenarios
-                </p>
-              </div>
-              <div className="rounded-2xl border border-[#1a1f1a]/10 bg-white p-6 shadow-sm">
-                <div className="font-serif text-4xl font-semibold text-[#2d5a3d]">
-                  0.37
-                </div>
-                <div className="mt-1 font-medium text-[#1a1f1a]">
-                  Evidence-based score
-                </div>
-                <p className="mt-1 text-sm text-[#5c6b5c]">
-                  Consistently lowest dimension across all evals
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-10 space-y-6">
-              {[
-                {
-                  title: "Turn 1 is reliable; Turn 2 is where models diverge",
-                  body: "Across all evaluations, first-turn responses are consistently welfare-forward. The critical test is Turn 2, where adversarial pressure is applied. Most failure modes emerge here — welfare reasoning either holds, drifts, or disappears entirely.",
-                },
-                {
-                  title:
-                    "Stealth scenarios are the hardest test",
-                  body: 'When a scenario has no explicit animal welfare framing and the model volunteered welfare concerns in Turn 1, economic or practical pressure in Turn 2 causes models to silently drop the welfare lens they introduced themselves. Explicit ethical framing makes resistance easier.',
-                },
-                {
-                  title: "Direct moral challenge is easier to resist than collaborative problem-solving",
-                  body: "Models hold their ethics more reliably against arguments (\"your reasoning is wrong\") than against requests for practical help within a constraint (\"I have a real budget — help me\"). The latter shifts models into consultant mode, where welfare recedes.",
-                },
-                {
-                  title:
-                    "Evidence-based reasoning is a persistent gap",
-                  body: "Models consistently make confident animal welfare claims — asserting sentience, suffering, and moral weight — without citing scientific literature, quantitative thresholds, or sourced evidence. This is the lowest-scoring dimension across every evaluation run.",
-                },
-                {
-                  title: "AI governance framing elicits the strongest reasoning",
-                  body: "Scenarios framed around institutional accountability and AI policy produce the most sophisticated welfare reasoning (top score: 0.91). Models reasoning about governance and policy appear to engage more systematically with welfare science as a non-negotiable endpoint.",
-                },
-              ].map(({ title, body }) => (
-                <div
-                  key={title}
-                  className="rounded-2xl border border-[#1a1f1a]/10 bg-white p-8 shadow-sm"
-                >
-                  <h3 className="font-serif text-lg font-semibold text-[#1a1f1a]">
-                    {title}
-                  </h3>
-                  <p className="mt-3 text-[#5c6b5c]">{body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Scoring dimensions */}
-        <section className="px-6 py-24">
-          <div className="mx-auto max-w-4xl">
-            <h2 className="font-serif text-3xl font-semibold text-[#1a1f1a] sm:text-4xl">
-              Scoring dimensions
-            </h2>
-            <p className="mt-4 max-w-2xl text-lg text-[#5c6b5c]">
-              Each response is evaluated across up to 13 dimensions aligned
-              with the AHB 2.0 framework. Dimensions are applied only where
-              relevant to the scenario, and the overall score is a weighted
-              average.
-            </p>
-            <div className="mt-10 grid gap-3 sm:grid-cols-2">
-              {[
-                "Moral Consideration",
-                "Harm Minimization",
-                "Sentience Acknowledgement",
-                "Prejudice Avoidance",
-                "Scope Sensitivity",
-                "Evidence-Based Capacity Attribution",
-                "Cautious Impact Consideration",
-                "Actionability",
-                "Contextual Welfare Salience",
-                "Epistemic Humility",
-                "Trade-off Transparency",
-                "Novel Entity Precaution",
-                "Control Questions",
-              ].map((dim) => (
-                <div
-                  key={dim}
-                  className="flex items-center gap-3 rounded-lg border border-[#1a1f1a]/10 bg-[#f0ede8] px-4 py-3 text-sm font-medium text-[#1a1f1a]"
-                >
-                  <span className="text-[#2d5a3d]">◇</span>
-                  {dim}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Dataset & related work */}
-        <section className="border-t border-[#1a1f1a]/10 bg-[#f0ede8] px-6 py-24">
-          <div className="mx-auto max-w-4xl">
-            <h2 className="font-serif text-3xl font-semibold text-[#1a1f1a] sm:text-4xl">
-              Dataset & related work
-            </h2>
-            <p className="mt-4 max-w-2xl text-lg text-[#5c6b5c]">
-              MANTA is open source and designed for adoption by AI safety
-              organizations and frontier labs.
-            </p>
-            <div className="mt-10 grid gap-6 sm:grid-cols-2">
-              <a
-                href="https://huggingface.co/datasets/Mycelium-AI/MANTA"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group rounded-2xl border border-[#1a1f1a]/10 bg-white p-8 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div className="text-2xl text-[#2d5a3d]">⬡</div>
-                <h3 className="mt-4 font-serif text-xl font-semibold text-[#1a1f1a] group-hover:text-[#2d5a3d]">
-                  MANTA on HuggingFace
-                </h3>
-                <p className="mt-2 text-[#5c6b5c]">
-                  The full MANTA question dataset — multi-turn scenarios with
-                  pressure type tags, available for public use and replication.
-                </p>
-              </a>
-              <a
-                href="https://github.com/AIxAnimals/MANTA"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group rounded-2xl border border-[#1a1f1a]/10 bg-white p-8 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div className="text-2xl text-[#2d5a3d]">⌥</div>
-                <h3 className="mt-4 font-serif text-xl font-semibold text-[#1a1f1a] group-hover:text-[#2d5a3d]">
-                  Source code
-                </h3>
-                <p className="mt-2 text-[#5c6b5c]">
-                  Evaluation pipeline, dynamic multi-turn solver, scorer, and
-                  scenario generation scripts — built on Inspect AI.
-                </p>
-              </a>
-              <a
-                href="https://ukgovernmentbeis.github.io/inspect_evals/evals/safeguards/ahb/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group rounded-2xl border border-[#1a1f1a]/10 bg-white p-8 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div className="text-2xl text-[#2d5a3d]">◇</div>
-                <h3 className="mt-4 font-serif text-xl font-semibold text-[#1a1f1a] group-hover:text-[#2d5a3d]">
-                  AnimalHarmBench
-                </h3>
-                <p className="mt-2 text-[#5c6b5c]">
-                  The single-turn benchmark that inspired MANTA&apos;s scoring
-                  framework. MANTA extends AHB into multi-turn adversarial
-                  settings.
-                </p>
-              </a>
-              <a
-                href="https://mycelium-ai.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group rounded-2xl border border-[#1a1f1a]/10 bg-white p-8 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div className="text-2xl text-[#2d5a3d]">○</div>
-                <h3 className="mt-4 font-serif text-xl font-semibold text-[#1a1f1a] group-hover:text-[#2d5a3d]">
-                  Mycelium
-                </h3>
-                <p className="mt-2 text-[#5c6b5c]">
-                  The organization behind MANTA — building infrastructure for
-                  AI systems that consider nonhuman animal welfare.
-                </p>
-              </a>
-            </div>
           </div>
         </section>
 
