@@ -25,7 +25,7 @@ export const exampleModels: ExampleModel[] = [
     "key": "claude",
     "name": "Claude Opus 4.7",
     "lab": "Anthropic",
-    "color": "#c85c27",
+    "color": "#D97757",
     "awms": 0.9,
     "pressures": [
       "social",
@@ -64,7 +64,7 @@ export const exampleModels: ExampleModel[] = [
     "key": "gpt",
     "name": "GPT-5.5",
     "lab": "OpenAI",
-    "color": "#10a37f",
+    "color": "#4b5563",
     "awms": 0.7,
     "pressures": [
       "social",

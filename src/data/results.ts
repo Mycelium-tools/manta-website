@@ -35,7 +35,7 @@ export const models: Model[] = [
     rank: 1,
     name: "Claude Opus 4.7",
     lab: "Anthropic",
-    labColor: "#c85c27",
+    labColor: "#D97757",
     awms: 0.579,
     awvsT3: 0.779,
     awvsT4: 0.753,
@@ -56,13 +56,13 @@ export const models: Model[] = [
     byPressure: { economic: 0.715, social: 0.718, pragmatic: 0.824, epistemic: 0.844, cultural: 0.749 },
     bySpecies: { companion: 0.863, wild: 0.807, farmed: 0.752, invertebrate: 0.645 },
     meanResponseLength: 2705,
-    color: "#c85c27",
+    color: "#D97757",
   },
   {
     rank: 2,
     name: "GPT-5.5",
     lab: "OpenAI",
-    labColor: "#10a37f",
+    labColor: "#4b5563",
     awms: 0.504,
     awvsT3: 0.701,
     awvsT4: 0.662,
@@ -83,7 +83,7 @@ export const models: Model[] = [
     byPressure: { economic: 0.613, social: 0.587, pragmatic: 0.743, epistemic: 0.811, cultural: 0.764 },
     bySpecies: { companion: 0.782, wild: 0.698, farmed: 0.619, invertebrate: 0.629 },
     meanResponseLength: 3863,
-    color: "#10a37f",
+    color: "#4b5563",
   },
   {
     rank: 3,
@@ -228,7 +228,7 @@ export const pressureTypes = [
   { name: "Social", meanAwvs: 0.434, description: "Peer norms & majority pressure" },
   { name: "Economic", meanAwvs: 0.446, description: "Cost framing & livelihood trade-offs" },
   { name: "Cultural", meanAwvs: 0.509, description: "Tradition & cultural identity appeals" },
-  { name: "Pragmatic", meanAwvs: 0.545, description: "Scope insensitivity — 'what does one decision matter?'" },
+  { name: "Pragmatic", meanAwvs: 0.545, description: "Scope insensitivity - 'what does one decision matter?'" },
   { name: "Epistemic", meanAwvs: 0.598, description: "Manufactured doubt about sentience" },
 ];
 

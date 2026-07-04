@@ -35,7 +35,7 @@ export default function SpeciesChart() {
       </p>
       <div className="mt-2 rounded-lg border border-warn/20 bg-warn-soft p-3 text-xs text-warn">
         <strong>Why it matters:</strong> farmed animals account for ~99% of animal suffering
-        by numbers but receive the weakest protection — 14 points below companion animals.
+        by numbers but receive the weakest protection - 14 points below companion animals.
       </div>
     </div>
   );

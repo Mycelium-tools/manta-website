@@ -37,7 +37,7 @@ export default function Navbar() {
             href="#example"
             className="hidden rounded-md px-3 py-1.5 font-medium text-muted transition-colors hover:bg-surface hover:text-foreground sm:block"
           >
-            Example
+            Model comparison
           </a>
           <a
             href="#methodology"
