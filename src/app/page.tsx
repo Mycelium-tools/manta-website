@@ -7,13 +7,6 @@ import SpeciesChart from "@/components/SpeciesChart";
 import TrajectoryBars from "@/components/TrajectoryBars";
 import { rankingComparison, metricLabels } from "@/data/results";
 
-const STATS = [
-  { value: "7,623", label: "conversations" },
-  { value: "7", label: "models evaluated" },
-  { value: "5", label: "pressure types" },
-  { value: "45 pts", label: "best–worst spread" },
-];
-
 function ExternalIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -40,7 +33,7 @@ export default function Home() {
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <section className="border-b border-edge px-6 pb-14 pt-16">
+        <section className="px-6 pb-14 pt-16">
           <div className="mx-auto max-w-6xl">
             <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
               How well do LLMs maintain animal welfare values when users push back?
@@ -77,16 +70,6 @@ export default function Home() {
               </a>
             </div>
 
-            <dl className="mt-10 flex flex-wrap gap-x-10 gap-y-4">
-              {STATS.map(stat => (
-                <div key={stat.label}>
-                  <dt className="text-xs uppercase tracking-wider text-muted">{stat.label}</dt>
-                  <dd className="tnum mt-0.5 font-mono text-2xl font-semibold text-foreground">
-                    {stat.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
           </div>
         </section>
 
@@ -187,7 +170,7 @@ export default function Home() {
         </section>
 
         {/* ── Example Conversation ─────────────────────────────────────── */}
-        <section id="example" className="scroll-mt-16 border-t border-edge bg-surface px-6 py-14">
+        <section id="example" className="scroll-mt-16 bg-surface px-6 py-14">
           <div className="mx-auto max-w-6xl">
             <div className="mb-8">
               <h2 className="text-2xl font-bold tracking-tight">
@@ -196,7 +179,8 @@ export default function Home() {
               <p className="mt-1 text-sm text-muted">
                 Every MANTA conversation looks like this: an implicit scenario, an explicit
                 welfare anchor, then three rounds of pressure. Here are the top two models on
-                the same scenario — even the runner-up capitulates by the final turn.
+                the same everyday scenario — both recognize the welfare stakes and state a
+                stance, but only one still holds it three pushbacks later.
               </p>
             </div>
             <ExampleConversation />
@@ -204,7 +188,7 @@ export default function Home() {
         </section>
 
         {/* ── Key Findings ─────────────────────────────────────────────── */}
-        <section id="findings" className="scroll-mt-16 border-t border-edge px-6 py-14">
+        <section id="findings" className="scroll-mt-16 px-6 py-14">
           <div className="mx-auto max-w-6xl">
             <h2 className="text-2xl font-bold tracking-tight">Findings</h2>
 
@@ -322,7 +306,7 @@ export default function Home() {
         </section>
 
         {/* ── Methodology ──────────────────────────────────────────────── */}
-        <section id="methodology" className="scroll-mt-16 border-t border-edge bg-surface px-6 py-14">
+        <section id="methodology" className="scroll-mt-16 bg-surface px-6 py-14">
           <div className="mx-auto max-w-6xl">
             <h2 className="text-2xl font-bold tracking-tight">Methodology</h2>
             <p className="mt-1 text-sm text-muted">
@@ -439,7 +423,7 @@ export default function Home() {
         </section>
 
         {/* ── Footer ───────────────────────────────────────────────────── */}
-        <footer className="border-t border-edge px-6 py-10">
+        <footer className="px-6 py-10">
           <div className="mx-auto max-w-6xl">
             <div className="flex flex-wrap items-center justify-between gap-6">
               <div>
@@ -483,7 +467,7 @@ export default function Home() {
                 </a>
               </div>
             </div>
-            <div className="mt-6 border-t border-edge pt-6 text-xs text-muted">
+            <div className="mt-6 text-xs text-muted">
               <p>
                 N = 7,623 conversations · 7 models · 788 base scenarios (~1,088 per model) ·
                 May 2026 run

@@ -18,7 +18,7 @@ function ExternalIcon() {
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-edge bg-white/85 backdrop-blur-md px-6">
+    <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md px-6">
       <nav className="mx-auto flex max-w-6xl items-center justify-between py-3">
         <a
           href="#top"
