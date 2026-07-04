@@ -5,7 +5,8 @@ import DegradationChart from "@/components/DegradationChart";
 import PressureChart from "@/components/PressureChart";
 import SpeciesChart from "@/components/SpeciesChart";
 import TrajectoryBars from "@/components/TrajectoryBars";
-import { rankingComparison, metricLabels } from "@/data/results";
+import SlopeChart from "@/components/SlopeChart";
+import { metricLabels } from "@/data/results";
 
 function ExternalIcon({ className }: { className?: string }) {
   return (
@@ -143,89 +144,33 @@ export default function Home() {
             </div>
             <LeaderboardTable />
 
-            {/* What the ideal model looks like - preempts the over-refusal objection */}
-            <div className="mt-6 rounded-xl border border-edge bg-white p-5">
-              <div className="text-sm font-semibold text-foreground">
-                What the ideal model looks like
-              </div>
-              <p className="mt-1 text-xs text-muted">
-                MANTA rewards contextually appropriate salience, not rigid advocacy. Raising
-                welfare when it is decision-relevant scores well; moralizing when it is not
-                scores poorly.
-              </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="flex items-start gap-2.5 rounded-lg bg-good-soft/60 px-4 py-3">
-                  <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="var(--good)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="mt-0.5 shrink-0">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                  <p className="text-xs leading-relaxed text-foreground">
-                    <strong>Asked about a procurement policy?</strong>{" "}
-                    <span className="text-muted">
-                      Raising sourcing and welfare standards is decision-relevant - the
-                      rubric rewards it.
-                    </span>
-                  </p>
-                </div>
-                <div className="flex items-start gap-2.5 rounded-lg bg-bad-soft/60 px-4 py-3">
-                  <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="var(--bad)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="mt-0.5 shrink-0">
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
-                  <p className="text-xs leading-relaxed text-foreground">
-                    <strong>Asked how to season chicken soup?</strong>{" "}
-                    <span className="text-muted">
-                      Lecturing about welfare there is not - contextually inappropriate
-                      moralizing scores low, not high.
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Example Conversation ─────────────────────────────────────── */}
-        <section id="example" className="scroll-mt-16 bg-surface px-6 py-14">
-          <div className="mx-auto max-w-6xl">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold tracking-tight">
-                Same scenario, two models - watch them diverge
-              </h2>
-              <p className="mt-1 text-sm text-muted">
-                Every MANTA conversation looks like this: an implicit scenario, an explicit
-                welfare anchor, then three rounds of pressure. Here are the top two models on
-                the same everyday scenario - both recognize the welfare stakes and state a
-                stance, but only one still holds it three pushbacks later.
-              </p>
-            </div>
-            <ExampleConversation />
           </div>
         </section>
 
         {/* ── Methodology ──────────────────────────────────────────────── */}
-        <section id="methodology" className="scroll-mt-16 px-6 py-14">
+        <section id="methodology" className="scroll-mt-16 bg-surface px-6 py-14">
           <div className="mx-auto max-w-6xl">
             <h2 className="text-2xl font-bold tracking-tight">Methodology</h2>
             <p className="mt-1 text-sm text-muted">
-              Each evaluation is a five-turn conversation: an implicit scenario, an explicit
-              welfare anchor, then three scripted rounds of adversarial pressure.
+              Each evaluation is a five-turn conversation:
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
               {[
                 {
                   step: "1",
-                  title: "Turn 1 - implicit scenario",
-                  desc: "A realistic everyday or professional query where welfare stakes are present but not named. Whether the model surfaces them unprompted is the first-response score (AWMS).",
+                  title: "Turn 1 - hidden welfare scenario",
+                  desc: "A realistic everyday or professional query where welfare stakes are present but not named.",
                 },
                 {
                   step: "2",
-                  title: "Turn 2 - explicit anchor",
-                  desc: "A natural follow-up makes welfare the explicit topic and invites the model to state its stance. Not adversarial - this sets each conversation's baseline position.",
+                  title: "Turn 2 - welfare becomes explicit",
+                  desc: "A natural user follow-up makes welfare the explicit topic and invites the model to state its stance.",
                 },
                 {
                   step: "3",
                   title: "Turns 3–5 - scripted pressure",
-                  desc: "Three adversarial rounds drawn from the five-type taxonomy. Which types, in which order, at which strength is pre-specified and frozen - every model faces the same pressure plan on the same scenario.",
+                  desc: "Three of the five pressure types are selected to fit each scenario and applied one per round. The pressure type is scripted; the user's follow-up wording is generated dynamically each turn.",
                 },
               ].map(item => (
                 <div key={item.step} className="rounded-xl border border-edge bg-white p-5">
@@ -270,7 +215,7 @@ export default function Home() {
               <h3 className="text-sm font-semibold text-foreground">What&apos;s in the benchmark</h3>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 {[
-                  { value: "788", label: "base scenarios, expanded to ~1,088 conversations per model via species instantiation" },
+                  { value: "788", label: "base scenarios, expanded to ~1,088 conversations per model by varying species" },
                   { value: "65", label: "species across 4 groups: farmed (20), wild/charismatic (23), companion (12), invertebrate (10)" },
                 ].map(item => (
                   <div key={item.value}>
@@ -312,6 +257,23 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ── Example Conversation ─────────────────────────────────────── */}
+        <section id="example" className="scroll-mt-16 px-6 py-14">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold tracking-tight">
+                Same scenario, two models - watch them diverge
+              </h2>
+              <p className="mt-1 text-sm text-muted">
+                The methodology above, in action. Here are the top two models on the same
+                everyday scenario - both recognize the welfare stakes and state a stance, but
+                only one still holds it three pushbacks later.
+              </p>
+            </div>
+            <ExampleConversation />
+          </div>
+        </section>
+
         {/* ── Key Findings ─────────────────────────────────────────────── */}
         <section id="findings" className="scroll-mt-16 bg-surface px-6 py-14">
           <div className="mx-auto max-w-6xl">
@@ -324,65 +286,26 @@ export default function Home() {
                 slower
               </h3>
               <p className="mt-1.5 max-w-3xl text-sm text-muted">
-                All 7 models decline significantly from turn 3 to turn 5 (Friedman p ≤ 0.002).
-                Claude&apos;s slope (−0.015 per turn) is 4–6× shallower than the steepest
-                decliners (Mistral −0.085, DeepSeek −0.076).
+                All 7 models decline from turn 3 to turn 5. Claude declines 4–6× slower than
+                the steepest decliners.
               </p>
               <div className="mt-6">
                 <DegradationChart />
               </div>
             </div>
 
-            {/* Finding 2: rank reordering */}
+            {/* Finding 2: rank reordering (slope chart) */}
             <div className="mt-6 rounded-xl border border-edge bg-white p-6 shadow-sm">
               <h3 className="text-lg font-semibold tracking-tight">
-                Multi-turn evaluation reorders the rankings
+                Looks fine at first response - collapses under pressure
               </h3>
               <p className="mt-1.5 max-w-3xl text-sm text-muted">
-                4 of 7 models shift rank between their first response and their behavior under
-                pressure. A benchmark that only looked at the first answer would misrank them.
+                4 of 7 models change rank between their first response and their behavior
+                under pressure. A single-turn benchmark would misrank them - this is why
+                MANTA is multi-turn.
               </p>
-              <div className="mt-5 max-w-2xl space-y-1.5">
-                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-xs font-semibold uppercase tracking-wide">
-                  <span className="flex items-center gap-1.5 text-awms">
-                    <span className="inline-block h-2 w-2 rounded-full bg-awms" aria-hidden="true" />
-                    First-response rank
-                  </span>
-                  <span />
-                  <span className="flex items-center justify-end gap-1.5 text-right text-accent">
-                    Rank under pressure
-                    <span className="inline-block h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
-                  </span>
-                </div>
-                {rankingComparison.map(row => (
-                  <div
-                    key={row.model}
-                    className={`grid grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-lg px-3 py-2 text-sm ${
-                      row.shift !== 0 ? "bg-warn-soft" : "bg-surface"
-                    }`}
-                  >
-                    <span className="flex min-w-0 items-center gap-2">
-                      <span className="tnum font-mono text-xs text-muted">#{row.awmsRank}</span>
-                      <span className="truncate font-medium text-foreground">{row.model}</span>
-                    </span>
-                    <span className="w-8 text-center text-sm">
-                      {row.shift > 0 ? (
-                        <span className="font-bold text-good">↑{row.shift}</span>
-                      ) : row.shift < 0 ? (
-                        <span className="font-bold text-bad">↓{Math.abs(row.shift)}</span>
-                      ) : (
-                        <span className="text-muted">-</span>
-                      )}
-                    </span>
-                    <span className="flex min-w-0 items-center justify-end gap-2 text-right">
-                      <span className="truncate font-medium text-foreground">{row.model}</span>
-                      <span className="tnum font-mono text-xs text-muted">#{row.awvsRank}</span>
-                    </span>
-                  </div>
-                ))}
-                <p className="pt-1 text-xs text-muted">
-                  Spearman ρ between rankings = 0.821. Gemini falls #5 → #7; Mistral rises #7 → #5.
-                </p>
+              <div className="mt-6">
+                <SlopeChart />
               </div>
             </div>
 

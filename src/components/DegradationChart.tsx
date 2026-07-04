@@ -20,7 +20,10 @@ const chartData = [
   { turn: "Turn 5", ...Object.fromEntries(models.map(m => [m.name, m.awvsT5])) },
 ];
 
-const byFinalScore = [...models].sort((a, b) => b.awvsT5 - a.awvsT5);
+// Ranked by decline from turn 3 to turn 5 (largest drop first)
+const byDecline = [...models].sort(
+  (a, b) => (a.awvsT5 - a.awvsT3) - (b.awvsT5 - b.awvsT3)
+);
 
 function CustomTooltip({
   active,
@@ -98,9 +101,10 @@ export default function DegradationChart() {
       </div>
 
       {/* Direct-labeled rail replaces a detached legend */}
-      <div className="flex shrink-0 flex-col justify-center gap-1.5 sm:w-52">
-        {byFinalScore.map(model => {
+      <div className="flex shrink-0 flex-col justify-center gap-1.5 sm:w-56">
+        {byDecline.map(model => {
           const isHero = model.name === EMPHASIZED;
+          const delta = (model.awvsT5 - model.awvsT3) * 100;
           return (
             <div
               key={model.name}
@@ -111,12 +115,14 @@ export default function DegradationChart() {
               <LabLogo lab={model.lab} color={model.color} size={13} />
               <span className="truncate">{model.name}</span>
               <span className="tnum ml-auto font-mono" style={{ color: model.color }}>
-                {(model.awvsT5 * 100).toFixed(0)}%
+                {delta.toFixed(1)}
               </span>
             </div>
           );
         })}
-        <div className="mt-1 px-2 text-[11px] text-muted">Score at turn 5</div>
+        <div className="mt-1 px-2 text-[11px] text-muted">
+          Points lost, turn 3 → turn 5 (biggest drop first)
+        </div>
       </div>
     </div>
   );

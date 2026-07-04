@@ -34,16 +34,16 @@ export default function Navbar() {
             Leaderboard
           </a>
           <a
-            href="#example"
-            className="hidden rounded-md px-3 py-1.5 font-medium text-muted transition-colors hover:bg-surface hover:text-foreground sm:block"
-          >
-            Model comparison
-          </a>
-          <a
             href="#methodology"
             className="hidden rounded-md px-3 py-1.5 font-medium text-muted transition-colors hover:bg-surface hover:text-foreground sm:block"
           >
             Methodology
+          </a>
+          <a
+            href="#example"
+            className="hidden rounded-md px-3 py-1.5 font-medium text-muted transition-colors hover:bg-surface hover:text-foreground sm:block"
+          >
+            Model comparison
           </a>
           <a
             href="#findings"
