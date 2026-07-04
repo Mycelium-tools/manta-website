@@ -67,7 +67,7 @@ export default function Home() {
                 See the leaderboard
               </a>
               <a
-                href="https://huggingface.co/datasets/Mycelium-AI/MANTA"
+                href="https://huggingface.co/datasets/mycelium-ai/manta-benchmark-questions"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 rounded-md border border-edge px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
@@ -464,7 +464,7 @@ export default function Home() {
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-muted">
                 <a
-                  href="https://huggingface.co/datasets/Mycelium-AI/MANTA"
+                  href="https://huggingface.co/datasets/mycelium-ai/manta-benchmark-questions"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1 transition-colors hover:text-foreground"

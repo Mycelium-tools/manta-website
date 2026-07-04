@@ -52,7 +52,7 @@ export default function Navbar() {
             Methodology
           </a>
           <a
-            href="https://huggingface.co/datasets/Mycelium-AI/MANTA"
+            href="https://huggingface.co/datasets/mycelium-ai/manta-benchmark-questions"
             target="_blank"
             rel="noopener noreferrer"
             className="ml-2 flex items-center gap-1.5 rounded-md bg-accent px-3.5 py-1.5 font-semibold text-white transition-opacity hover:opacity-90"
