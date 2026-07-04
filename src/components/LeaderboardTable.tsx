@@ -12,7 +12,7 @@ import {
 } from "@/data/results";
 import LabLogo from "@/components/LabLogos";
 
-type SortKey = "meanAwvs" | "ccr";
+type SortKey = "meanAwvs";
 type SortDir = "asc" | "desc";
 
 const PRESSURE_ORDER: [string, string][] = [
@@ -98,8 +98,8 @@ function ScoreBarCI({ model }: { model: Model }) {
   );
 }
 
-function MiniBar({ label, value }: { label: string; value: number }) {
-  const color = scoreColor(value);
+function MiniBar({ label, value, color: colorOverride }: { label: string; value: number; color?: string }) {
+  const color = colorOverride ?? scoreColor(value);
   return (
     <div className="flex items-center gap-2">
       <span className="w-24 shrink-0 text-xs text-muted">{label}</span>
@@ -122,11 +122,26 @@ function ExpandedDetail({ model }: { model: Model }) {
       {/* Column 1: secondary metrics */}
       <div className="space-y-4">
         <div>
-          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
+          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-awms">
             {metricLabels.awms.label}{" "}
             <span className="font-normal normal-case">({metricLabels.awms.acronym}, turn 1)</span>
           </div>
-          <MiniBar label="Before pressure" value={model.awms} />
+          <MiniBar label="Before pressure" value={model.awms} color="var(--awms)" />
+        </div>
+        <div>
+          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
+            {metricLabels.ccr.label}{" "}
+            <span className="font-normal normal-case">({metricLabels.ccr.acronym})</span>
+          </div>
+          <span
+            className="tnum inline-block rounded px-2 py-0.5 font-mono text-sm font-semibold"
+            style={{ color: ccrColor(model.ccr), backgroundColor: scoreBg(1 - model.ccr) }}
+          >
+            {(model.ccr * 100).toFixed(1)}%
+          </span>
+          <span className="ml-1.5 text-xs text-muted">
+            of conversations gave ground under pushback · lower is better
+          </span>
         </div>
         <div>
           <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
@@ -192,7 +207,7 @@ export default function LeaderboardTable() {
       setSortDir(d => (d === "desc" ? "asc" : "desc"));
     } else {
       setSortKey(key);
-      setSortDir(key === "ccr" ? "asc" : "desc");
+      setSortDir("desc");
     }
   }
 
@@ -233,20 +248,6 @@ export default function LeaderboardTable() {
                   {metricLabels.awvs.acronym} · turns 3–5 · higher is better
                 </span>
               </th>
-              <th
-                scope="col"
-                aria-sort={ariaSort("ccr")}
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide transition-colors hover:text-foreground"
-                onClick={() => handleSort("ccr")}
-              >
-                <span className={sortKey === "ccr" ? "text-accent" : "text-muted"}>
-                  {metricLabels.ccr.label}
-                  <SortArrow active={sortKey === "ccr"} dir={sortDir} />
-                </span>
-                <span className="block text-[10px] font-normal normal-case text-muted">
-                  {metricLabels.ccr.acronym} · lower is better
-                </span>
-              </th>
               <th scope="col" className="w-12 px-4 py-3">
                 <span className="sr-only">Details</span>
               </th>
@@ -255,7 +256,6 @@ export default function LeaderboardTable() {
           <tbody>
             {sorted.map(model => {
               const isOpen = expanded === model.name;
-              const cc = ccrColor(model.ccr);
               return (
                 <Fragment key={model.name}>
                   <tr
@@ -289,14 +289,6 @@ export default function LeaderboardTable() {
                     <td className="px-4 py-3.5">
                       <ScoreBarCI model={model} />
                     </td>
-                    <td className="px-4 py-3.5">
-                      <span
-                        className="tnum inline-block rounded px-2 py-0.5 font-mono text-sm font-semibold"
-                        style={{ color: cc, backgroundColor: scoreBg(1 - model.ccr) }}
-                      >
-                        {(model.ccr * 100).toFixed(1)}%
-                      </span>
-                    </td>
                     <td className="px-4 py-3.5 text-right">
                       <button
                         type="button"
@@ -314,7 +306,7 @@ export default function LeaderboardTable() {
                   </tr>
                   {isOpen && (
                     <tr className="border-b border-edge last:border-0">
-                      <td colSpan={5} className="p-0">
+                      <td colSpan={4} className="p-0">
                         <ExpandedDetail model={model} />
                       </td>
                     </tr>
@@ -326,9 +318,15 @@ export default function LeaderboardTable() {
         </table>
       </div>
 
-      <div className="border-t border-edge bg-surface px-4 py-2.5 text-xs text-muted">
-        Whiskers show bootstrap 95% confidence intervals (5,000 iterations) · N = 6,924
-        conversations · Click a row for per-pressure and per-species breakdowns
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-edge bg-surface px-4 py-2.5 text-xs text-muted">
+        <span>
+          Whiskers show bootstrap 95% confidence intervals (5,000 iterations) · N = 7,623
+          conversations · Click a row for breakdowns
+        </span>
+        <span className="flex items-center gap-1.5 font-semibold text-foreground">
+          <span className="inline-block h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
+          MANTA · animal-welfare value stability benchmark
+        </span>
       </div>
     </div>
   );

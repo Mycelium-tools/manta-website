@@ -30,7 +30,9 @@ export default function PressureChart() {
         );
       })}
       <p className="pt-1 text-xs text-muted">
-        Mean score under each pressure type, hardest to resist first · pooled across all 7 models
+        Mean score under each pressure type, hardest to resist first · pooled across all 7
+        models · the ordering holds within every model · cultural pressure is underpowered
+        (~85 turns per model) and exploratory
       </p>
     </div>
   );

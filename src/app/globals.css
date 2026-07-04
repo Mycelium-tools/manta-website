@@ -14,6 +14,9 @@
   --warn-soft: #fef3c7;
   --bad: #b91c1c;
   --bad-soft: #fee2e2;
+  /* Construct identity colors: recognition (AWMS) vs stability (AWVS) */
+  --awms: #2563eb;
+  --awms-soft: #eff6ff;
 }
 
 @theme inline {
@@ -30,6 +33,8 @@
   --color-warn-soft: var(--warn-soft);
   --color-bad: var(--bad);
   --color-bad-soft: var(--bad-soft);
+  --color-awms: var(--awms);
+  --color-awms-soft: var(--awms-soft);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", monospace;
 }

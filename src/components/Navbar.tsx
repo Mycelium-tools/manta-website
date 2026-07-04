@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 function ExternalIcon() {
   return (
     <svg
@@ -20,15 +18,14 @@ function ExternalIcon() {
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-edge bg-white/85 backdrop-blur-md">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-base font-bold tracking-tight text-foreground"
+    <header className="sticky top-0 z-50 border-b border-edge bg-white/85 backdrop-blur-md px-6">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between py-3">
+        <a
+          href="#top"
+          className="text-base font-bold tracking-tight text-foreground"
         >
-          <span className="inline-block h-2.5 w-2.5 rounded-full bg-accent" aria-hidden="true" />
           MANTA
-        </Link>
+        </a>
         <div className="flex items-center gap-1 text-sm">
           <a
             href="#leaderboard"

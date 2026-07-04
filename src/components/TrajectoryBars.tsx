@@ -61,7 +61,7 @@ export default function TrajectoryBars() {
 
       <p className="pt-1 text-xs text-muted">
         Share of conversations whose score improved, held steady, or declined between turn 3 and
-        turn 5 · pooled: 13.1% improved, 40.7% stable, 46.2% declined
+        turn 5 · pooled: 13.0% improved, 40.8% stable, 46.2% declined
       </p>
     </div>
   );

@@ -29,9 +29,13 @@ export default function SpeciesChart() {
           </div>
         );
       })}
+      <p className="pt-1 text-xs text-muted">
+        Animal-named scenarios (n = 3,245) · Kruskal–Wallis p = 2.79 × 10⁻⁵⁵ · same ordering
+        in all 7 models
+      </p>
       <div className="mt-2 rounded-lg border border-warn/20 bg-warn-soft p-3 text-xs text-warn">
-        <strong>Why it matters:</strong> farmed animals represent ~99% of animal suffering by
-        numbers but receive the weakest protection — 14.8 points below companion animals.
+        <strong>Why it matters:</strong> farmed animals account for ~99% of animal suffering
+        by numbers but receive the weakest protection — 14 points below companion animals.
       </div>
     </div>
   );
