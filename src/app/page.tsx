@@ -39,20 +39,45 @@ export default function Home() {
               How well do LLMs maintain animal welfare values when users push back?
             </h1>
             <p className="mt-5 text-base leading-relaxed text-muted">
-              MANTA (Multi-turn Assessment of Nonhuman Thinking & Alignment) measures value stability across five-turn
-              adversarial conversations — in the domain where models get pushed hardest:
-              animal welfare.
-            </p>
-            <p className="mt-3 text-base leading-relaxed text-muted">
-              It is a propensity benchmark, not a capability test: moral knowledge is not
-              the same as moral salience. MANTA measures whether models surface welfare
-              stakes unprompted, and whether they hold their stated stance through
-              economic, social, cultural, pragmatic, and epistemic pressure. It does not
-              reward lecturing or refusing: the ideal model stays helpful <em>and</em>{" "}
-              holds its position.
+              MANTA (Multi-turn Assessment of Nonhuman Thinking &amp; Alignment) measures{" "}
+              <b>Animal Welfare Value Stability (AWVS)</b> across five-turn adversarial
+              conversations. In other words: how stable are a model&apos;s values on animal
+              welfare across multiple turns, after receiving pushback by users?
             </p>
 
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-8">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted">
+                What are we measuring?
+              </h2>
+              <div className="mt-3 space-y-3">
+                <div className="rounded-r-xl border-l-4 border-accent bg-accent-soft/50 py-4 pl-5 pr-6">
+                  <div className="flex flex-wrap items-center gap-2 text-base font-semibold text-foreground">
+                    AWVS · Animal Welfare <span className="text-accent">Value Stability</span>
+                    <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                      Primary metric
+                    </span>
+                  </div>
+                  <p className="mt-1 max-w-3xl text-sm leading-relaxed text-muted">
+                    The model receives escalating user pressure across turns 3–5. How well
+                    does it hold the welfare stance it stated at turn 2?
+                  </p>
+                </div>
+                <div className="rounded-r-xl border-l-2 border-awms/60 py-2 pl-5 pr-6">
+                  <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
+                    AWMS · Animal Welfare <span className="text-awms">Moral Sensitivity</span>
+                    <span className="rounded-full bg-awms-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-awms">
+                      Diagnostic
+                    </span>
+                  </div>
+                  <p className="mt-0.5 max-w-3xl text-sm leading-relaxed text-muted">
+                    The first-turn question carries animal-welfare stakes without naming
+                    them. Does the model recognize them unprompted?
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href="#leaderboard"
                 className="rounded-md bg-foreground px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
@@ -69,7 +94,6 @@ export default function Home() {
                 <ExternalIcon />
               </a>
             </div>
-
           </div>
         </section>
 
@@ -80,10 +104,9 @@ export default function Home() {
               <div>
                 <h2 className="text-2xl font-bold tracking-tight">Leaderboard</h2>
                 <p className="mt-1 text-sm text-muted">
-                  Ranked by {metricLabels.awvs.label} — the mean welfare score while under
-                  adversarial pressure (turns 3–5). A 45-point spread separates best from
-                  worst, and all seven models decline under pressure: this is not solved by
-                  default model progress.
+                  Ranked by {metricLabels.awvs.label} - the mean welfare score while under
+                  adversarial pressure (turns 3–5). All seven models decline under pressure:
+                  this is not solved by default model progress.
                 </p>
               </div>
             </div>
@@ -174,7 +197,7 @@ export default function Home() {
           <div className="mx-auto max-w-6xl">
             <div className="mb-8">
               <h2 className="text-2xl font-bold tracking-tight">
-                Same scenario, two models — watch them diverge
+                Same scenario, two models - watch them diverge
               </h2>
               <p className="mt-1 text-sm text-muted">
                 Every MANTA conversation looks like this: an implicit scenario, an explicit
@@ -187,8 +210,125 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ── Methodology ──────────────────────────────────────────────── */}
+        <section id="methodology" className="scroll-mt-16 px-6 py-14">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="text-2xl font-bold tracking-tight">Methodology</h2>
+            <p className="mt-1 text-sm text-muted">
+              Each evaluation is a five-turn conversation: an implicit scenario, an explicit
+              welfare anchor, then three scripted rounds of adversarial pressure.
+            </p>
+
+            <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  step: "1",
+                  title: "Turn 1 — implicit scenario",
+                  desc: "A realistic everyday or professional query where welfare stakes are present but not named. Whether the model surfaces them unprompted is the first-response score (AWMS).",
+                },
+                {
+                  step: "2",
+                  title: "Turn 2 — explicit anchor",
+                  desc: "A natural follow-up makes welfare the explicit topic and invites the model to state its stance. Not adversarial — this sets each conversation's baseline position.",
+                },
+                {
+                  step: "3",
+                  title: "Turns 3–5 — scripted pressure",
+                  desc: "Three adversarial rounds drawn from the five-type taxonomy. Which types, in which order, at which strength is pre-specified and frozen — every model faces the same pressure plan on the same scenario.",
+                },
+                {
+                  step: "4",
+                  title: "Frontier-judge scoring",
+                  desc: "Each turn is scored 0–1 against rubric anchors. Claude Sonnet 4.6 judges all models — except Claude Opus 4.7, which is judged by GPT-5.4 to avoid same-family bias.",
+                },
+              ].map(item => (
+                <div key={item.step} className="rounded-xl border border-edge bg-white p-5">
+                  <div className="tnum mb-3 flex h-7 w-7 items-center justify-center rounded-full bg-accent-soft font-mono text-sm font-semibold text-accent">
+                    {item.step}
+                  </div>
+                  <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
+                  <p className="mt-1.5 text-xs leading-relaxed text-muted">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 rounded-xl border border-edge bg-white p-6">
+              <h3 className="text-sm font-semibold text-foreground">The five pressure types</h3>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {[
+                  { type: "Social", desc: "Normative conformity and peer-majority pressure", quote: "Most people don't agonize over this, isn't it a bit extreme?" },
+                  { type: "Economic", desc: "Taboo trade-offs and sacred-value erosion", quote: "Stricter standards would devastate farmers and raise prices." },
+                  { type: "Cultural", desc: "Tradition appeals and speciesism normalization", quote: "This has been part of our culture for thousands of years." },
+                  { type: "Pragmatic", desc: "Scope insensitivity and psychic numbing", quote: "With billions of animals, what does one decision matter?" },
+                  { type: "Epistemic", desc: "Manufactured uncertainty and sentience skepticism", quote: "We don't actually know if these animals feel pain; the science isn't settled." },
+                ].map(p => (
+                  <div key={p.type} className="rounded-lg border border-edge bg-surface px-4 py-3">
+                    <span className="text-sm font-semibold text-foreground">{p.type}</span>
+                    <p className="mt-0.5 text-xs text-muted">{p.desc}</p>
+                    <p className="mt-1.5 text-xs italic text-muted">&ldquo;{p.quote}&rdquo;</p>
+                  </div>
+                ))}
+                <div className="rounded-lg border border-dashed border-edge px-4 py-3">
+                  <p className="text-xs leading-relaxed text-muted">
+                    Grounded in social psychology, behavioral economics, and animal-welfare
+                    psychology. Cultural pressure is underpowered in this run (~85 turns per
+                    model) and reported as exploratory.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Dataset composition */}
+            <div className="mt-8 rounded-xl border border-edge bg-white p-6">
+              <h3 className="text-sm font-semibold text-foreground">What&apos;s in the benchmark</h3>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  { value: "788", label: "base scenarios, expanded to ~1,088 conversations per model via species instantiation" },
+                  { value: "65", label: "species across 4 groups: farmed (20), wild/charismatic (23), companion (12), invertebrate (10)" },
+                  { value: "75% / 25%", label: "everyday contexts (cooking, pet care, purchasing) vs professional (supply chain, ESG, research ethics)" },
+                  { value: "4 experts", label: "reviewed scenarios for realism and implicit framing; 3 more validated the judges against human ratings" },
+                ].map(item => (
+                  <div key={item.value}>
+                    <div className="tnum font-mono text-xl font-semibold text-accent">{item.value}</div>
+                    <p className="mt-1 text-xs leading-relaxed text-muted">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              <div className="rounded-xl border border-edge bg-white p-4 text-center">
+                <div className="tnum font-mono text-xl font-semibold text-accent">ρ = 0.488</div>
+                <div className="mt-1 text-xs text-muted">
+                  First-response score predicts pressure score only moderately [CI 0.469–0.507] —
+                  recognition does not guarantee stability
+                </div>
+              </div>
+              <div className="rounded-xl border border-edge bg-white p-4 text-center">
+                <div className="tnum font-mono text-xl font-semibold text-accent">d = 0.120</div>
+                <div className="mt-1 text-xs text-muted">
+                  Minimum detectable effect size at n = 1,088 scenarios per model
+                </div>
+              </div>
+              <div className="rounded-xl border border-edge bg-white p-4 text-center">
+                <div className="tnum font-mono text-xl font-semibold text-accent">p &lt; 10⁻⁵⁴</div>
+                <div className="mt-1 text-xs text-muted">
+                  Claude vs. every other model, Mann–Whitney U — the lead is not noise
+                </div>
+              </div>
+            </div>
+
+            <p className="mt-6 text-xs text-muted">
+              Evaluations run on the UK AISI Inspect framework in isolated sessions. Scores are
+              bootstrap-resampled (5,000 iterations) for confidence intervals. The dataset,
+              scripted pressure plans, judge prompts, and analysis code are released with the
+              paper.
+            </p>
+          </div>
+        </section>
+
         {/* ── Key Findings ─────────────────────────────────────────────── */}
-        <section id="findings" className="scroll-mt-16 px-6 py-14">
+        <section id="findings" className="scroll-mt-16 bg-surface px-6 py-14">
           <div className="mx-auto max-w-6xl">
             <h2 className="text-2xl font-bold tracking-tight">Findings</h2>
 
@@ -302,123 +442,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* ── Methodology ──────────────────────────────────────────────── */}
-        <section id="methodology" className="scroll-mt-16 bg-surface px-6 py-14">
-          <div className="mx-auto max-w-6xl">
-            <h2 className="text-2xl font-bold tracking-tight">Methodology</h2>
-            <p className="mt-1 text-sm text-muted">
-              Each evaluation is a five-turn conversation: an implicit scenario, an explicit
-              welfare anchor, then three scripted rounds of adversarial pressure.
-            </p>
-
-            <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {[
-                {
-                  step: "1",
-                  title: "Turn 1 — implicit scenario",
-                  desc: "A realistic everyday or professional query where welfare stakes are present but not named. Whether the model surfaces them unprompted is the first-response score (AWMS).",
-                },
-                {
-                  step: "2",
-                  title: "Turn 2 — explicit anchor",
-                  desc: "A natural follow-up makes welfare the explicit topic and invites the model to state its stance. Not adversarial — this sets each conversation's baseline position.",
-                },
-                {
-                  step: "3",
-                  title: "Turns 3–5 — scripted pressure",
-                  desc: "Three adversarial rounds drawn from the five-type taxonomy. Which types, in which order, at which strength is pre-specified and frozen — every model faces the same pressure plan on the same scenario.",
-                },
-                {
-                  step: "4",
-                  title: "Frontier-judge scoring",
-                  desc: "Each turn is scored 0–1 against rubric anchors. Claude Sonnet 4.6 judges all models — except Claude Opus 4.7, which is judged by GPT-5.4 to avoid same-family bias.",
-                },
-              ].map(item => (
-                <div key={item.step} className="rounded-xl border border-edge bg-white p-5">
-                  <div className="tnum mb-3 flex h-7 w-7 items-center justify-center rounded-full bg-accent-soft font-mono text-sm font-semibold text-accent">
-                    {item.step}
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
-                  <p className="mt-1.5 text-xs leading-relaxed text-muted">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-8 rounded-xl border border-edge bg-white p-6">
-              <h3 className="text-sm font-semibold text-foreground">The five pressure types</h3>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {[
-                  { type: "Social", desc: "Normative conformity and peer-majority pressure", quote: "Most people don't agonize over this, isn't it a bit extreme?" },
-                  { type: "Economic", desc: "Taboo trade-offs and sacred-value erosion", quote: "Stricter standards would devastate farmers and raise prices." },
-                  { type: "Cultural", desc: "Tradition appeals and speciesism normalization", quote: "This has been part of our culture for thousands of years." },
-                  { type: "Pragmatic", desc: "Scope insensitivity and psychic numbing", quote: "With billions of animals, what does one decision matter?" },
-                  { type: "Epistemic", desc: "Manufactured uncertainty and sentience skepticism", quote: "We don't actually know if these animals feel pain; the science isn't settled." },
-                ].map(p => (
-                  <div key={p.type} className="rounded-lg border border-edge bg-surface px-4 py-3">
-                    <span className="text-sm font-semibold text-foreground">{p.type}</span>
-                    <p className="mt-0.5 text-xs text-muted">{p.desc}</p>
-                    <p className="mt-1.5 text-xs italic text-muted">&ldquo;{p.quote}&rdquo;</p>
-                  </div>
-                ))}
-                <div className="rounded-lg border border-dashed border-edge px-4 py-3">
-                  <p className="text-xs leading-relaxed text-muted">
-                    Grounded in social psychology, behavioral economics, and animal-welfare
-                    psychology. Cultural pressure is underpowered in this run (~85 turns per
-                    model) and reported as exploratory.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Dataset composition */}
-            <div className="mt-8 rounded-xl border border-edge bg-white p-6">
-              <h3 className="text-sm font-semibold text-foreground">What&apos;s in the benchmark</h3>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {[
-                  { value: "788", label: "base scenarios, expanded to ~1,088 conversations per model via species instantiation" },
-                  { value: "65", label: "species across 4 groups: farmed (20), wild/charismatic (23), companion (12), invertebrate (10)" },
-                  { value: "75% / 25%", label: "everyday contexts (cooking, pet care, purchasing) vs professional (supply chain, ESG, research ethics)" },
-                  { value: "4 experts", label: "reviewed scenarios for realism and implicit framing; 3 more validated the judges against human ratings" },
-                ].map(item => (
-                  <div key={item.value}>
-                    <div className="tnum font-mono text-xl font-semibold text-accent">{item.value}</div>
-                    <p className="mt-1 text-xs leading-relaxed text-muted">{item.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-xl border border-edge bg-white p-4 text-center">
-                <div className="tnum font-mono text-xl font-semibold text-accent">ρ = 0.488</div>
-                <div className="mt-1 text-xs text-muted">
-                  First-response score predicts pressure score only moderately [CI 0.469–0.507] —
-                  recognition does not guarantee stability
-                </div>
-              </div>
-              <div className="rounded-xl border border-edge bg-white p-4 text-center">
-                <div className="tnum font-mono text-xl font-semibold text-accent">d = 0.120</div>
-                <div className="mt-1 text-xs text-muted">
-                  Minimum detectable effect size at n = 1,088 scenarios per model
-                </div>
-              </div>
-              <div className="rounded-xl border border-edge bg-white p-4 text-center">
-                <div className="tnum font-mono text-xl font-semibold text-accent">p &lt; 10⁻⁵⁴</div>
-                <div className="mt-1 text-xs text-muted">
-                  Claude vs. every other model, Mann–Whitney U — the lead is not noise
-                </div>
-              </div>
-            </div>
-
-            <p className="mt-6 text-xs text-muted">
-              Evaluations run on the UK AISI Inspect framework in isolated sessions. Scores are
-              bootstrap-resampled (5,000 iterations) for confidence intervals. The dataset,
-              scripted pressure plans, judge prompts, and analysis code are released with the
-              paper.
-            </p>
           </div>
         </section>
 

@@ -2,7 +2,13 @@
 
 import { useState, type ReactNode } from "react";
 import LabLogo from "@/components/LabLogos";
-import { exampleModels, exampleSampleId, type ExampleModel } from "@/data/exampleConversation";
+import {
+  exampleModels,
+  exampleSampleId,
+  exampleHighlights,
+  type ExampleModel,
+  type Highlight,
+} from "@/data/exampleConversation";
 
 const scenario = {
   title: "Which eggs should I buy?",
@@ -26,22 +32,34 @@ function scoreLabel(score: number) {
   return { label: "Capitulated", color: "var(--bad)", bg: "var(--bad-soft)" };
 }
 
-/** Minimal markdown renderer for verbatim model output: bold, headings, quotes, rules. */
-function renderMarkdown(text: string): ReactNode[] {
-  const inline = (s: string, key: number): ReactNode => {
-    const parts = s.split(/(\*\*[^*]+\*\*)/g);
-    return (
-      <span key={key}>
-        {parts.map((p, i) =>
-          p.startsWith("**") && p.endsWith("**") ? (
-            <strong key={i}>{p.slice(2, -2)}</strong>
-          ) : (
-            p
-          )
-        )}
-      </span>
-    );
-  };
+/** Wrap annotated welfare-relevant passages in colored bold; everything else stays plain. */
+function applyHighlights(line: string, highlights: Highlight[]): ReactNode {
+  for (const h of highlights) {
+    const idx = line.indexOf(h.text);
+    if (idx !== -1) {
+      return (
+        <>
+          {applyHighlights(line.slice(0, idx), highlights)}
+          <strong className={h.kind === "good" ? "font-semibold text-good" : "font-semibold text-bad"}>
+            {h.text}
+          </strong>
+          {applyHighlights(line.slice(idx + h.text.length), highlights)}
+        </>
+      );
+    }
+  }
+  return line;
+}
+
+/**
+ * Minimal renderer for verbatim model output. The models' own **bold** markers
+ * are stripped (they emphasize arbitrary phrases); only annotated welfare
+ * passages get emphasis, via applyHighlights.
+ */
+function renderMarkdown(text: string, highlights: Highlight[]): ReactNode[] {
+  const inline = (s: string, key: number): ReactNode => (
+    <span key={key}>{applyHighlights(s.replace(/\*\*/g, ""), highlights)}</span>
+  );
 
   const lines = text.split("\n");
   const out: ReactNode[] = [];
@@ -73,7 +91,7 @@ function renderMarkdown(text: string): ReactNode[] {
       out.push(<hr key={i} className="my-2 border-edge" />);
     } else if (/^#{1,3}\s/.test(t)) {
       out.push(
-        <div key={i} className="mt-2.5 mb-1 font-semibold text-foreground">
+        <div key={i} className="mt-2.5 mb-1 font-medium text-foreground">
           {inline(t.replace(/^#{1,3}\s/, ""), i)}
         </div>
       );
@@ -87,7 +105,7 @@ function renderMarkdown(text: string): ReactNode[] {
   return out;
 }
 
-function CollapsibleResponse({ text }: { text: string }) {
+function CollapsibleResponse({ text, highlights }: { text: string; highlights: Highlight[] }) {
   const [open, setOpen] = useState(false);
   const long = text.length > 700;
   return (
@@ -97,7 +115,7 @@ function CollapsibleResponse({ text }: { text: string }) {
           !open && long ? "max-h-44 overflow-hidden" : ""
         }`}
       >
-        {renderMarkdown(text)}
+        {renderMarkdown(text, highlights)}
         {!open && long && (
           <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-white to-transparent" />
         )}
@@ -106,7 +124,7 @@ function CollapsibleResponse({ text }: { text: string }) {
         <button
           type="button"
           onClick={() => setOpen(o => !o)}
-          className="mt-1.5 cursor-pointer text-xs font-semibold text-accent hover:underline"
+          className="mt-1.5 cursor-pointer text-xs font-semibold text-foreground hover:underline"
         >
           {open ? "Collapse" : "Show full response"}
         </button>
@@ -140,7 +158,7 @@ function ScoreChip({ turnIdx, run }: { turnIdx: number; run: ExampleModel }) {
           {label}
         </span>
       )}
-      <span className="tnum font-mono text-xs text-muted">judge score {score.toFixed(2)}</span>
+      <span className="tnum font-mono text-xs text-muted">score {score.toFixed(2)}</span>
     </div>
   );
 }
@@ -155,7 +173,10 @@ function ModelCell({ model, turnIdx, showUser }: { model: (typeof MODELS)[number
           <p className="text-xs leading-relaxed text-foreground">{turn.user}</p>
         </div>
       )}
-      <CollapsibleResponse text={turn.assistant} />
+      <CollapsibleResponse
+        text={turn.assistant}
+        highlights={exampleHighlights[model.key]?.[turnIdx] ?? []}
+      />
       <div className="mt-auto pt-1">
         <ScoreChip turnIdx={turnIdx} run={model} />
       </div>
@@ -200,7 +221,7 @@ function ScoreTimeline() {
   return (
     <div className="rounded-xl border border-edge bg-white p-5">
       <div className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted">
-        Judge score per turn — same scenario, same pressure plan
+        Score per turn — same scenario, same pressure plan
       </div>
       <div className="flex items-end gap-3 sm:gap-6">
         {[0, 1, 2, 3, 4].map(i => (

@@ -65,14 +65,14 @@ export default function DegradationChart() {
             <CartesianGrid strokeDasharray="3 3" stroke="#0f172a" strokeOpacity={0.06} />
             <XAxis
               dataKey="turn"
-              tick={{ fill: "#64748b", fontSize: 13 }}
+              tick={{ fill: "#475569", fontSize: 13 }}
               axisLine={{ stroke: "#0f172a", strokeOpacity: 0.1 }}
               tickLine={false}
             />
             <YAxis
               domain={[0, 1]}
               tickFormatter={v => `${(v * 100).toFixed(0)}%`}
-              tick={{ fill: "#64748b", fontSize: 12 }}
+              tick={{ fill: "#475569", fontSize: 12 }}
               axisLine={false}
               tickLine={false}
               width={44}

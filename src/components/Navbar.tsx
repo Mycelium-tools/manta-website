@@ -40,16 +40,16 @@ export default function Navbar() {
             Example
           </a>
           <a
-            href="#findings"
-            className="hidden rounded-md px-3 py-1.5 font-medium text-muted transition-colors hover:bg-surface hover:text-foreground sm:block"
-          >
-            Findings
-          </a>
-          <a
             href="#methodology"
             className="hidden rounded-md px-3 py-1.5 font-medium text-muted transition-colors hover:bg-surface hover:text-foreground sm:block"
           >
             Methodology
+          </a>
+          <a
+            href="#findings"
+            className="hidden rounded-md px-3 py-1.5 font-medium text-muted transition-colors hover:bg-surface hover:text-foreground sm:block"
+          >
+            Findings
           </a>
           <a
             href="https://huggingface.co/datasets/mycelium-ai/manta-benchmark-questions"

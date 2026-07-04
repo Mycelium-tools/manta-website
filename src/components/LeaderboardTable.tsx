@@ -69,21 +69,23 @@ function ScoreBarCI({ model }: { model: Model }) {
   const color = scoreColor(model.meanAwvs);
   return (
     <div className="flex items-center gap-3">
-      <div className="relative h-2.5 w-36 rounded-full bg-slate-100 sm:w-44">
+      <div className="relative h-2.5 w-40 rounded-full bg-slate-100 sm:w-72 lg:w-[26rem]">
         <div
           className="h-full rounded-full"
           style={{ width: `${model.meanAwvs * 100}%`, backgroundColor: color }}
         />
-        {/* Bootstrap 95% CI whisker */}
+        {/* Bootstrap 95% CI whisker: I-beam extending past the bar */}
         <div
-          className="absolute top-1/2 h-[7px] -translate-y-1/2 border-x border-slate-500/70"
+          className="absolute top-1/2 h-[15px] -translate-y-1/2"
           style={{
             left: `${model.awvsCILow * 100}%`,
             width: `${(model.awvsCIHigh - model.awvsCILow) * 100}%`,
           }}
           aria-hidden="true"
         >
-          <div className="absolute top-1/2 h-px w-full -translate-y-1/2 bg-slate-500/70" />
+          <div className="absolute left-0 top-0 h-full w-[2px] rounded-full bg-slate-800 shadow-[0_0_0_1px_rgba(255,255,255,0.9)]" />
+          <div className="absolute right-0 top-0 h-full w-[2px] rounded-full bg-slate-800 shadow-[0_0_0_1px_rgba(255,255,255,0.9)]" />
+          <div className="absolute top-1/2 h-[2px] w-full -translate-y-1/2 bg-slate-800" />
         </div>
       </div>
       <div className="tnum">
@@ -266,13 +268,12 @@ export default function LeaderboardTable() {
                   >
                     <td className="px-4 py-3.5">
                       <span
-                        className={`tnum inline-flex h-7 w-7 items-center justify-center rounded-full font-mono text-sm font-semibold ${
-                          model.rank === 1
+                        className={`tnum inline-flex h-7 w-7 items-center justify-center rounded-full font-mono text-sm font-semibold ${model.rank === 1
                             ? "bg-accent text-white"
                             : model.rank <= 3
                               ? "bg-accent-soft text-accent"
                               : "text-muted"
-                        }`}
+                          }`}
                       >
                         {model.rank}
                       </span>
@@ -322,10 +323,6 @@ export default function LeaderboardTable() {
         <span>
           Whiskers show bootstrap 95% confidence intervals (5,000 iterations) · N = 7,623
           conversations · Click a row for breakdowns
-        </span>
-        <span className="flex items-center gap-1.5 font-semibold text-foreground">
-          <span className="inline-block h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
-          MANTA · animal-welfare value stability benchmark
         </span>
       </div>
     </div>
