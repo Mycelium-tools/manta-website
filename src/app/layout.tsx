@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
-import { Fraunces, DM_Sans } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "MANTA — Multi-turn Assessment of Nonhuman Thinking and Alignment",
+  title: "MANTA Benchmark — Animal Welfare Reasoning Leaderboard",
   description:
-    "MANTA is a dynamic adversarial benchmark evaluating animal welfare reasoning in frontier AI models through multi-turn conversations with escalating pressure.",
+    "MANTA is the first adversarial multi-turn benchmark for animal welfare reasoning in frontier AI models. See results across 7 models, 5 pressure types, and 6,924 conversations.",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${fraunces.variable} ${dmSans.variable} font-sans antialiased`}
+        className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
         {children}
       </body>
