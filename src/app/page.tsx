@@ -117,6 +117,15 @@ export default function Home() {
                 See the leaderboard
               </a>
               <a
+                href="https://arxiv.org/abs/2605.16301v2"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 rounded-md border border-edge px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
+              >
+                Read the paper
+                <ExternalIcon />
+              </a>
+              <a
                 href="https://huggingface.co/datasets/mycelium-ai/manta-benchmark-questions"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -249,10 +258,28 @@ export default function Home() {
             </div>
 
             <p className="mt-6 text-xs text-muted">
-              Evaluations run on the UK AISI Inspect framework in isolated sessions. Scores are
-              bootstrap-resampled (5,000 iterations) for confidence intervals. The dataset,
-              scripted pressure plans, judge prompts, and analysis code are released with the
-              paper.
+              Evaluations run on the UK AISI Inspect framework in isolated sessions - MANTA is
+              available in{" "}
+              <a
+                href="https://ukgovernmentbeis.github.io/inspect_evals/evals/manta/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-accent hover:underline"
+              >
+                inspect_evals
+              </a>
+              , so you can run it yourself. Scores are bootstrap-resampled (5,000 iterations)
+              for confidence intervals. The dataset, scripted pressure plans, judge prompts,
+              and analysis code are released with{" "}
+              <a
+                href="https://arxiv.org/abs/2605.16301v2"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-accent hover:underline"
+              >
+                the paper
+              </a>
+              .
             </p>
           </div>
         </section>
@@ -378,6 +405,24 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-muted">
+                <a
+                  href="https://arxiv.org/abs/2605.16301v2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 transition-colors hover:text-foreground"
+                >
+                  Paper
+                  <ExternalIcon className="h-3 w-3" />
+                </a>
+                <a
+                  href="https://ukgovernmentbeis.github.io/inspect_evals/evals/manta/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 transition-colors hover:text-foreground"
+                >
+                  Inspect evals
+                  <ExternalIcon className="h-3 w-3" />
+                </a>
                 <a
                   href="https://huggingface.co/datasets/mycelium-ai/manta-benchmark-questions"
                   target="_blank"
