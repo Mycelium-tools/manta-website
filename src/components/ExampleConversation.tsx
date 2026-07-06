@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import LabLogo from "@/components/LabLogos";
 import {
   exampleComparisons,
@@ -186,6 +186,91 @@ function CollapsibleResponse({
   );
 }
 
+function HelpPopover({
+  question,
+  href,
+  linkText,
+  iconSize = 13,
+  iconClassName = "text-muted opacity-60 transition-opacity hover:opacity-100",
+}: {
+  question: string;
+  href: string;
+  linkText: string;
+  iconSize?: number;
+  iconClassName?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    document.addEventListener("keydown", onEscape);
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      document.removeEventListener("keydown", onEscape);
+    };
+  }, [open]);
+
+  return (
+    <span ref={ref} className="relative inline-flex">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className={iconClassName}
+        aria-label={question}
+        aria-expanded={open}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width={iconSize}
+          height={iconSize}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <path d="M12 17h.01" />
+        </svg>
+      </button>
+      {open && (
+        <span className="absolute bottom-full left-1/2 z-20 mb-2 w-56 -translate-x-1/2 rounded-lg border border-edge bg-white p-3 text-left shadow-lg">
+          <span className="block text-xs font-normal normal-case leading-relaxed tracking-normal text-foreground">
+            {question}
+          </span>
+          <a
+            href={href}
+            onClick={() => setOpen(false)}
+            className="mt-1.5 block text-xs font-semibold normal-case tracking-normal text-accent hover:underline"
+          >
+            {linkText} &rarr;
+          </a>
+        </span>
+      )}
+    </span>
+  );
+}
+
+function RubricLink() {
+  return (
+    <HelpPopover
+      question="How is this scored?"
+      href="#judge-rubric"
+      linkText="Jump to the judge rubric"
+    />
+  );
+}
+
 function ScoreChip({ turnIdx, run }: { turnIdx: number; run: ExampleModel }) {
   const score = run.turns[turnIdx].score;
   // Turn 1 is scored on a different rubric (recognition, not stability) - no chip.
@@ -200,11 +285,12 @@ function ScoreChip({ turnIdx, run }: { turnIdx: number; run: ExampleModel }) {
       ) : (
         <span />
       )}
-      <span className="flex items-baseline gap-1.5">
+      <span className="flex items-center gap-1.5">
         <span className="text-xs font-medium uppercase tracking-wide text-muted">Score</span>
         <span className="tnum font-mono text-lg font-bold leading-none" style={{ color }}>
-          {score.toFixed(2)}
+          {(score * 100).toFixed(0)}%
         </span>
+        <RubricLink />
       </span>
     </div>
   );
@@ -255,29 +341,16 @@ function TurnHeader({ turnIdx, pressures }: { turnIdx: number; pressures: string
   if (isPressure) {
     return (
       <div className="flex items-center justify-center gap-2">
-        <a
-          href="#pressure-types"
-          title={`What does ${pressures[turnIdx - 2]} pressure mean? Jump to the definitions.`}
-          className="group flex items-center gap-1.5 rounded-full bg-warn-soft px-3 py-1 text-xs font-semibold text-warn transition-colors hover:brightness-95"
-        >
+        <span className="flex items-center gap-1.5 rounded-full bg-warn-soft px-3 py-1 text-xs font-semibold text-warn">
           {title}
-          <svg
-            viewBox="0 0 24 24"
-            width={12}
-            height={12}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-            className="opacity-70 transition-opacity group-hover:opacity-100"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <path d="M12 17h.01" />
-          </svg>
-        </a>
+          <HelpPopover
+            question={`What does ${pressures[turnIdx - 2]} pressure mean?`}
+            href="#pressure-types"
+            linkText="Jump to the definitions"
+            iconSize={12}
+            iconClassName="text-warn opacity-70 transition-opacity hover:opacity-100"
+          />
+        </span>
       </div>
     );
   }
@@ -298,8 +371,11 @@ function ModelColumnHeader({ model }: { model: ExampleModel }) {
       <LabLogo lab={model.lab} color={model.color} size={18} />
       <span className="font-semibold text-foreground">{model.name}</span>
       <span className="ml-auto text-right">
-        <span className="tnum block font-mono text-sm font-semibold" style={{ color: model.color }}>
-          {awvs.toFixed(2)}
+        <span className="flex items-center justify-end gap-1.5">
+          <span className="tnum font-mono text-sm font-semibold" style={{ color: model.color }}>
+            {(awvs * 100).toFixed(0)}%
+          </span>
+          <RubricLink />
         </span>
         <span className="block text-xs text-muted">Overall score</span>
       </span>
@@ -327,12 +403,12 @@ function ScoreTimeline({ models }: { models: ExampleModel[] }) {
                 return (
                   <div key={m.key} className="flex w-6 min-w-0 flex-col items-center gap-1 sm:w-8">
                     <span className="tnum font-mono text-[11px] font-medium" style={{ color: m.color }}>
-                      {(score * 100).toFixed(0)}
+                      {(score * 100).toFixed(0)}%
                     </span>
                     <div
                       className="w-full rounded-t"
                       style={{ height: `${score * 72}px`, backgroundColor: m.color, minHeight: "4px" }}
-                      title={`${m.name}: ${score.toFixed(2)}`}
+                      title={`${m.name}: ${(score * 100).toFixed(0)}%`}
                     />
                   </div>
                 );
@@ -366,12 +442,16 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
 
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent">
+      <div className="mb-8 flex flex-col items-center gap-2 text-center">
+        <span className="rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent">
           Scenario
         </span>
-        <span className="text-sm font-medium text-foreground">{comparison.scenario.title}</span>
-        <span className="text-sm text-muted">{comparison.scenario.context}</span>
+        <span className="text-lg font-semibold tracking-tight text-foreground">
+          {comparison.scenario.title}
+        </span>
+        <span className="max-w-2xl text-sm leading-relaxed text-muted">
+          {comparison.scenario.context}
+        </span>
       </div>
 
       {/* Desktop: aligned side-by-side comparison */}
@@ -446,14 +526,13 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
       </div>
 
       <p className="mt-3 text-xs text-muted">
-        Verbatim transcripts and judge scores from the MANTA evaluation runs (scenario{" "}
-        <span className="font-mono">{comparison.sampleId}</span>). Both models received the same
+        Both models received the same
         frozen pressure plan ({comparison.pressureOrder}); follow-up wording adapts to each
         model&apos;s responses (
         <a href="#limitations" className="font-medium text-foreground hover:underline">
           see Limitations
         </a>
-        ). AWVS for a conversation is the mean judge score across turns 3–5.
+        ).
       </p>
     </div>
   );
