@@ -20,13 +20,14 @@ function findModel(modelName?: string): Model | undefined {
   );
 }
 
-/** "would rank #N on the main leaderboard" for a given score */
-function mainBoardRank(meanAwvs: number): number {
-  return models.filter(m => m.name !== "Gemini Flash Lite" && m.meanAwvs > meanAwvs).length + 1;
-}
-
 export default function GeminiFamilyBoard() {
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  const entries = [...geminiFamily].sort((a, b) => {
+    const am = findModel(a.modelName)?.meanAwvs ?? -1;
+    const bm = findModel(b.modelName)?.meanAwvs ?? -1;
+    return bm - am;
+  });
 
   return (
     <details className="group/board mt-8">
@@ -53,13 +54,12 @@ export default function GeminiFamilyBoard() {
         </span>
       </summary>
       <p className="mt-1 max-w-3xl pl-6 text-sm text-muted">
-        Three Gemini tiers, same protocol and scenario set as the main leaderboard -
-        separating raw capability from alignment training choices.
+        Three Gemini tiers, same protocol and scenario set as the main leaderboard
       </p>
 
       <div className="mt-4 overflow-hidden rounded-xl border border-edge bg-white shadow-sm">
         <div className="divide-y divide-edge">
-          {geminiFamily.map(entry => {
+          {entries.map((entry, i) => {
             const model = entry.status === "done" ? findModel(entry.modelName) : undefined;
             const isOpen = expanded === entry.name;
             return (
@@ -70,22 +70,21 @@ export default function GeminiFamilyBoard() {
                   }`}
                   onClick={model ? () => setExpanded(isOpen ? null : entry.name) : undefined}
                 >
+                  <span
+                    className={`tnum inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${
+                      i === 0 ? "bg-accent text-white" : "bg-accent-soft text-accent"
+                    }`}
+                  >
+                    {i + 1}
+                  </span>
                   <div className="flex w-56 shrink-0 items-center gap-2.5">
                     <LabLogo lab="Google" color={GEMINI_COLOR} size={18} />
-                    <div>
-                      <div className="font-semibold text-foreground">{entry.name}</div>
-                      <span className="mt-0.5 inline-block rounded-full bg-surface px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
-                        {entry.tier} tier
-                      </span>
-                    </div>
+                    <div className="font-semibold text-foreground">{entry.name}</div>
                   </div>
 
                   {model ? (
                     <>
                       <ScoreBarCI model={model} />
-                      <span className="text-xs text-muted">
-                        would rank #{mainBoardRank(model.meanAwvs)} on the main leaderboard
-                      </span>
                       <button
                         type="button"
                         aria-expanded={isOpen}
