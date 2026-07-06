@@ -9,7 +9,7 @@ export default function PressureChart() {
       <div className="pb-1 text-sm font-semibold text-foreground">
         Average score when facing each pressure type
         <span className="ml-2 text-xs font-normal text-muted">
-          all models pooled · higher = stance held
+          • higher = stance held
         </span>
       </div>
       {sorted.map(p => {

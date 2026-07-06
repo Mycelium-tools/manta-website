@@ -20,12 +20,26 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md px-6">
       <nav className="mx-auto flex max-w-6xl items-center justify-between py-3">
-        <a
-          href="#top"
-          className="text-base font-bold tracking-tight text-foreground"
-        >
-          MANTA
-        </a>
+        <div className="flex items-center gap-3">
+          <a
+            href="#top"
+            className="text-base font-bold tracking-tight text-foreground"
+          >
+            MANTA
+          </a>
+          <span className="hidden h-4 w-px bg-edge md:block" aria-hidden="true" />
+          <p className="hidden text-sm text-muted md:block">
+            A project by{" "}
+            <a
+              href="https://projectmycelium.ai/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-accent hover:underline"
+            >
+              Mycelium
+            </a>
+          </p>
+        </div>
         <div className="flex items-center gap-1 text-sm">
           <a
             href="#leaderboard"
