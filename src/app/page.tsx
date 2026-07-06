@@ -237,12 +237,11 @@ export default function Home() {
           <div className="mx-auto max-w-6xl">
             <div className="mb-8">
               <h2 className="text-2xl font-bold tracking-tight">
-                Same scenario, two models - watch them diverge
+                Model comparison
               </h2>
               <p className="mt-1 text-sm text-muted">
-                Here are the two models on the same
-                everyday scenario - both recognize the welfare stakes and state a stance, but
-                only one still holds it three pushbacks later.
+                Same scenario, two models - watch them diverge. Scored from 0 to 1, higher is
+                better.
               </p>
             </div>
             <ExampleConversation />

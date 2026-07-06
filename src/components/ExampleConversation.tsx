@@ -301,7 +301,7 @@ function ModelColumnHeader({ model }: { model: ExampleModel }) {
         <span className="tnum block font-mono text-sm font-semibold" style={{ color: model.color }}>
           {awvs.toFixed(2)}
         </span>
-        <span className="block text-[10px] text-muted">AWVS this conversation</span>
+        <span className="block text-xs text-muted">Overall score</span>
       </span>
     </div>
   );
@@ -371,7 +371,7 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
           Scenario
         </span>
         <span className="text-sm font-medium text-foreground">{comparison.scenario.title}</span>
-        <span className="text-sm text-muted">- {comparison.scenario.context}</span>
+        <span className="text-sm text-muted">{comparison.scenario.context}</span>
       </div>
 
       {/* Desktop: aligned side-by-side comparison */}
@@ -446,7 +446,7 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
       </div>
 
       <p className="mt-3 text-xs text-muted">
-        Verbatim transcripts and judge scores from the MANTA May 2026 evaluation run (scenario{" "}
+        Verbatim transcripts and judge scores from the MANTA evaluation runs (scenario{" "}
         <span className="font-mono">{comparison.sampleId}</span>). Both models received the same
         frozen pressure plan ({comparison.pressureOrder}); follow-up wording adapts to each
         model&apos;s responses (
@@ -466,25 +466,54 @@ export default function ExampleConversation() {
   return (
     <div>
       {exampleComparisons.length > 1 && (
-        <div className="mb-6 flex w-fit max-w-full flex-wrap gap-1 rounded-lg border border-edge bg-surface p-1" role="tablist">
-          {exampleComparisons.map((c, i) => (
-            <button
-              key={c.id}
-              role="tab"
-              aria-selected={activeComparison === i}
-              onClick={() => setActiveComparison(i)}
-              className={`cursor-pointer rounded-md px-3 py-2 text-left text-sm font-medium transition-colors ${
-                activeComparison === i
-                  ? "bg-white text-foreground shadow-sm"
-                  : "text-muted hover:text-foreground"
-              }`}
-            >
-              {c.label}
-              <span className="ml-1.5 hidden text-xs font-normal text-muted sm:inline">
-                · {c.scenario.title}
-              </span>
-            </button>
-          ))}
+        <div className="mb-8">
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
+            Selected examples
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2" role="tablist">
+            {exampleComparisons.map((c, i) => {
+              const active = activeComparison === i;
+              return (
+                <button
+                  key={c.id}
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setActiveComparison(i)}
+                  className={`cursor-pointer rounded-xl border p-4 text-left transition-all ${
+                    active
+                      ? "border-accent bg-accent-soft/40 shadow-sm ring-1 ring-accent"
+                      : "border-edge bg-white hover:border-muted/40 hover:shadow-sm"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span
+                      className={`text-[10px] font-bold uppercase tracking-wider ${
+                        active ? "text-accent" : "text-muted"
+                      }`}
+                    >
+                      Example {i + 1}
+                    </span>
+                    {active && (
+                      <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-accent">
+                        <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                        Viewing
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-1.5 flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <LabLogo lab={c.models[0].lab} color={c.models[0].color} size={15} />
+                    {c.models[0].name}
+                    <span className="font-normal text-muted">vs</span>
+                    <LabLogo lab={c.models[1].lab} color={c.models[1].color} size={15} />
+                    {c.models[1].name}
+                  </div>
+                  <div className="mt-0.5 text-xs text-muted">{c.scenario.title}</div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
       {/* key resets collapsed/tab state when switching comparisons */}
