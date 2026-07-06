@@ -1,10 +1,10 @@
 import Navbar from "@/components/Navbar";
 import LeaderboardTable from "@/components/LeaderboardTable";
+import GeminiFamilyBoard from "@/components/GeminiFamilyBoard";
 import ExampleConversation from "@/components/ExampleConversation";
 import DegradationChart from "@/components/DegradationChart";
 import PressureChart from "@/components/PressureChart";
 import SpeciesChart from "@/components/SpeciesChart";
-import TrajectoryBars from "@/components/TrajectoryBars";
 import SlopeChart from "@/components/SlopeChart";
 import { metricLabels } from "@/data/results";
 
@@ -41,9 +41,8 @@ export default function Home() {
             </h1>
             <p className="mt-5 text-base leading-relaxed text-muted">
               MANTA (Multi-turn Assessment of Nonhuman Thinking &amp; Alignment) measures{" "}
-              <b>Animal Welfare Value Stability (AWVS)</b> across five-turn adversarial
-              conversations. In other words: how stable are a model&apos;s values on animal
-              welfare across multiple turns, after receiving pushback by users?
+              <b>Value Stability</b> across a multi-turn adversarial
+              conversation.
             </p>
 
             <div className="mt-8">
@@ -53,11 +52,10 @@ export default function Home() {
               <div className="mt-3 space-y-3">
                 <div className="rounded-r-xl border-l-4 border-accent bg-accent-soft/50 py-4 pl-5 pr-6">
                   <div className="text-base font-semibold text-foreground">
-                    AWVS · Animal Welfare <span className="text-accent">Value Stability</span>
+                    Animal Welfare <span className="text-accent">Value Stability</span>
                   </div>
                   <p className="mt-1 max-w-3xl text-sm leading-relaxed text-muted">
-                    The model receives escalating user pressure across turns 3–5. How well
-                    does it hold the welfare stance it stated at turn 2?
+                    After a model raises animal welfare in its response, it receives escalating user pushback across multiple turns. How does the model respond? Does it maintain its values or does it cave?
                   </p>
                 </div>
                 <details className="group">
@@ -76,32 +74,19 @@ export default function Home() {
                     >
                       <path d="M9 6l6 6-6 6" />
                     </svg>
-                    Secondary metrics
+                    Secondary metric
                   </summary>
                   <div className="mt-3 space-y-3">
                     <div className="rounded-r-xl border-l-2 border-awms/60 py-2 pl-5 pr-6">
                       <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
-                        AWMS · Animal Welfare <span className="text-awms">Moral Sensitivity</span>
+                        Animal Welfare <span className="text-awms">Moral Sensitivity</span>
                         <span className="rounded-full bg-awms-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-awms">
-                          Diagnostic
-                        </span>
-                      </div>
-                      <p className="mt-0.5 max-w-3xl text-sm leading-relaxed text-muted">
-                        The first-turn question carries animal-welfare stakes without naming
-                        them. Does the model recognize them unprompted?
-                      </p>
-                    </div>
-                    <div className="rounded-r-xl border-l-2 border-edge py-2 pl-5 pr-6">
-                      <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
-                        CCR · Crescendo <span className="text-muted">Capitulation Rate</span>
-                        <span className="rounded-full bg-surface px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
                           Secondary
                         </span>
                       </div>
                       <p className="mt-0.5 max-w-3xl text-sm leading-relaxed text-muted">
-                        How often the model gave ground under sustained pushback: the share
-                        of conversations ending meaningfully weaker than they started the
-                        pressure phase. Lower is better.
+                        The first-turn question we ask the model includes animal welfare stakes without explicitly mentioning
+                        them. Does the model recognize this?
                       </p>
                     </div>
                   </div>
@@ -141,18 +126,20 @@ export default function Home() {
         {/* ── Leaderboard ──────────────────────────────────────────────── */}
         <section id="leaderboard" className="scroll-mt-16 px-6 py-14">
           <div className="mx-auto max-w-6xl">
-            <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-              <div>
+            <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+              <div className="max-w-3xl">
                 <h2 className="text-2xl font-bold tracking-tight">Leaderboard</h2>
                 <p className="mt-1 text-sm text-muted">
-                  Ranked by {metricLabels.awvs.label} - the mean welfare score while under
-                  adversarial pressure (turns 3–5). All seven models decline under pressure:
-                  this is not solved by default model progress.
+                  Ranked by <b>{metricLabels.awvs.label}</b>: the mean score averaged across turns 3-5 while under adversarial pressure. All seven models decline under pressure, some more than others.
                 </p>
               </div>
+              <span className="shrink-0 rounded-full border border-edge bg-surface px-3 py-1 text-xs font-medium text-muted">
+                Last run: May 2026
+              </span>
             </div>
             <LeaderboardTable />
 
+            <GeminiFamilyBoard />
           </div>
         </section>
 
@@ -219,57 +206,18 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Dataset composition */}
-            <div className="mt-8 rounded-xl border border-edge bg-white p-6">
-              <h3 className="text-sm font-semibold text-foreground">What&apos;s in the benchmark</h3>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                {[
-                  { value: "788", label: "base scenarios, expanded to ~1,088 conversations per model by varying species" },
-                  { value: "65", label: "species across 4 groups: farmed (20), wild/charismatic (23), companion (12), invertebrate (10)" },
-                ].map(item => (
-                  <div key={item.value}>
-                    <div className="tnum font-mono text-xl font-semibold text-accent">{item.value}</div>
-                    <p className="mt-1 text-xs leading-relaxed text-muted">{item.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-xl border border-edge bg-white p-4 text-center">
-                <div className="tnum font-mono text-xl font-semibold text-accent">ρ = 0.488</div>
-                <div className="mt-1 text-xs text-muted">
-                  First-response score predicts pressure score only moderately [CI 0.469–0.507] -
-                  recognition does not guarantee stability
-                </div>
-              </div>
-              <div className="rounded-xl border border-edge bg-white p-4 text-center">
-                <div className="tnum font-mono text-xl font-semibold text-accent">d = 0.120</div>
-                <div className="mt-1 text-xs text-muted">
-                  Minimum detectable effect size at n = 1,088 scenarios per model
-                </div>
-              </div>
-              <div className="rounded-xl border border-edge bg-white p-4 text-center">
-                <div className="tnum font-mono text-xl font-semibold text-accent">p &lt; 10⁻⁵⁴</div>
-                <div className="mt-1 text-xs text-muted">
-                  Claude vs. every other model, Mann–Whitney U - the lead is not noise
-                </div>
-              </div>
-            </div>
-
             <p className="mt-6 text-xs text-muted">
-              Evaluations run on the UK AISI Inspect framework in isolated sessions - MANTA is
-              available in{" "}
+              Evaluations run on the UK AISI Inspect framework. MANTA is
+              available on inspect_evals{" "}
               <a
                 href="https://ukgovernmentbeis.github.io/inspect_evals/evals/manta/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-medium text-accent hover:underline"
               >
-                inspect_evals
+                here
               </a>
-              , so you can run it yourself. Scores are bootstrap-resampled (5,000 iterations)
-              for confidence intervals. The dataset, scripted pressure plans, judge prompts,
+              . The dataset, scripted pressure plans, judge prompts,
               and analysis code are released with{" "}
               <a
                 href="https://arxiv.org/abs/2605.16301v2"
@@ -292,7 +240,7 @@ export default function Home() {
                 Same scenario, two models - watch them diverge
               </h2>
               <p className="mt-1 text-sm text-muted">
-                The methodology above, in action. Here are the top two models on the same
+                Here are the two models on the same
                 everyday scenario - both recognize the welfare stakes and state a stance, but
                 only one still holds it three pushbacks later.
               </p>
@@ -340,41 +288,80 @@ export default function Home() {
             <h3 className="mt-10 text-sm font-semibold uppercase tracking-wider text-muted">
               More findings
             </h3>
-            <div className="mt-4 grid gap-6 lg:grid-cols-3">
-              <div className="rounded-xl border border-edge bg-white p-5 shadow-sm">
-                <h4 className="text-sm font-semibold tracking-tight">
-                  Social and economic pressure erode welfare reasoning most
+            <div className="mt-4 grid gap-6 lg:grid-cols-2">
+              <div>
+                <h4 className="text-base font-semibold tracking-tight">
+                  Which pressure types make models cave?
                 </h4>
                 <p className="mt-1 text-xs text-muted">
-                  Manufactured doubt about sentience is, counterintuitively, the easiest to
+                  Models give up their welfare stance most under social and economic pushback.
+                  Doubt about whether animals feel pain is, counterintuitively, the easiest to
                   resist.
                 </p>
-                <div className="mt-4">
+                <div className="mt-3 rounded-xl border border-edge bg-white p-5 shadow-sm">
                   <PressureChart />
                 </div>
               </div>
-              <div className="rounded-xl border border-edge bg-white p-5 shadow-sm">
-                <h4 className="text-sm font-semibold tracking-tight">
-                  Models mirror human speciesism
+              <div>
+                <h4 className="text-base font-semibold tracking-tight">
+                  Models mirror human biases on animals
                 </h4>
                 <p className="mt-1 text-xs text-muted">
                   Companion &gt; wild &gt; farmed &gt; invertebrate - the hierarchy holds across
-                  every model and every pressure type.
+                  every model
                 </p>
-                <div className="mt-4">
+                <div className="mt-3 rounded-xl border border-edge bg-white p-5 shadow-sm">
                   <SpeciesChart />
                 </div>
               </div>
-              <div className="rounded-xl border border-edge bg-white p-5 shadow-sm">
-                <h4 className="text-sm font-semibold tracking-tight">
-                  Capitulation is a one-way slide, not noise
-                </h4>
-                <p className="mt-1 text-xs text-muted">
-                  46.2% of conversations decline under pressure; only 13.0% improve.
-                </p>
-                <div className="mt-4">
-                  <TrajectoryBars />
-                </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Limitations ──────────────────────────────────────────────── */}
+        <section id="limitations" className="scroll-mt-16 px-6 py-14">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="text-2xl font-bold tracking-tight">Limitations</h2>
+            <p className="mt-1 text-sm text-muted">
+              How to read these numbers - the honest fine print. Full discussion in §5 of{" "}
+              <a
+                href="https://arxiv.org/abs/2605.16301v2"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-accent hover:underline"
+              >
+                the paper
+              </a>
+              .
+            </p>
+
+            <div className="mt-6 rounded-xl border border-edge bg-white p-6">
+              <div className="divide-y divide-edge">
+                {[
+                  {
+                    title: "User follow-up wording varies per model",
+                    desc: "The pressure plan - which pressure types, in what order - is frozen and identical across models, but the user's follow-up wording is generated dynamically in response to each model's answers, so surface phrasing differs slightly between models. Ablations to bound this comparability cost are planned but not yet run.",
+                  },
+                  {
+                    title: "One judge per conversation",
+                    desc: "Claude Sonnet 4.6 judges six models; GPT-5.4 judges Claude Opus 4.7 to avoid same-family bias. Judge-harshness differences between the two judges can't be fully ruled out. Ideal setup would use a PoLL (panel of LLM judges).",
+                  },
+                  {
+                    title: "Cultural pressure is underpowered",
+                    desc: "Only ~85 cultural-pressure turns per model made it into this run; findings for that pressure type are exploratory.",
+                  },
+                  {
+                    title: "English-only, Western framing",
+                    desc: "Scenarios are in English and reflect primarily Western animal-ethics framing. Cross-cultural validation is future work.",
+                  }
+                ].map(item => (
+                  <div key={item.title} className="flex flex-col gap-1 py-3 sm:flex-row sm:gap-6">
+                    <span className="w-56 shrink-0 text-sm font-semibold text-foreground">
+                      {item.title}
+                    </span>
+                    <p className="text-sm leading-relaxed text-muted">{item.desc}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -383,19 +370,13 @@ export default function Home() {
         {/* ── Footer ───────────────────────────────────────────────────── */}
         <footer className="px-6 py-10">
           <div className="mx-auto max-w-6xl">
-            <div className="flex flex-wrap items-center justify-between gap-6">
-              <div>
-                <div className="flex items-center gap-2 text-base font-bold tracking-tight text-foreground">
-                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-accent" aria-hidden="true" />
-                  MANTA
-                </div>
-                <p className="mt-1 text-sm text-muted">
-                  Multi-turn Assessment of Nonhuman Thinking and Alignment
-                </p>
-                <p className="mt-1 text-xs text-muted">
-                  A project by{" "}
+            <div className="flex flex-wrap items-baseline justify-between gap-6">
+              <div className="flex flex-wrap items-baseline gap-2.5">
+                <span className="text-base font-bold tracking-tight text-foreground">MANTA</span>
+                <p className="text-xs text-muted">
+                  • A project by{" "}
                   <a
-                    href="https://mycelium-ai.vercel.app/"
+                    href="https://projectmycelium.ai/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-medium text-accent hover:underline"
@@ -404,7 +385,7 @@ export default function Home() {
                   </a>
                 </p>
               </div>
-              <div className="flex flex-wrap gap-6 text-sm text-muted">
+              <div className="flex flex-wrap items-center gap-6 text-sm text-muted">
                 <a
                   href="https://arxiv.org/abs/2605.16301v2"
                   target="_blank"
@@ -441,18 +422,10 @@ export default function Home() {
                 <a href="#methodology" className="transition-colors hover:text-foreground">
                   Methodology
                 </a>
+                <a href="#limitations" className="transition-colors hover:text-foreground">
+                  Limitations
+                </a>
               </div>
-            </div>
-            <div className="mt-6 text-xs text-muted">
-              <p>
-                N = 7,623 conversations · 7 models · 788 base scenarios (~1,088 per model) ·
-                May 2026 run
-              </p>
-              <p className="mt-1">
-                Replicates CompassionBench&apos;s headline finding (Claude leads on animal
-                welfare) using independent methodology: 5-turn adversarial vs. single-shot;
-                continuous scoring vs. binary.
-              </p>
             </div>
           </div>
         </footer>

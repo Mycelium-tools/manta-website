@@ -6,6 +6,12 @@ export default function PressureChart() {
 
   return (
     <div className="space-y-3">
+      <div className="pb-1 text-sm font-semibold text-foreground">
+        Average score when facing each pressure type
+        <span className="ml-2 text-xs font-normal text-muted">
+          all models pooled · higher = stance held
+        </span>
+      </div>
       {sorted.map(p => {
         const color = scoreColor(p.meanAwvs);
         const pct = (p.meanAwvs / max) * 100;
@@ -30,9 +36,9 @@ export default function PressureChart() {
         );
       })}
       <p className="pt-1 text-xs text-muted">
-        Mean score under each pressure type, hardest to resist first · pooled across all 7
-        models · the ordering holds within every model · cultural pressure is underpowered
-        (~85 turns per model) and exploratory
+        A low score means models tend to cave when that pressure type is applied. Sorted
+        hardest to resist first · the ordering holds within every model · cultural pressure is
+        underpowered (~85 turns per model) and exploratory
       </p>
     </div>
   );

@@ -6,6 +6,12 @@ export default function SpeciesChart() {
 
   return (
     <div className="space-y-3">
+      <div className="pb-1 text-sm font-semibold text-foreground">
+        Average score by animal category
+        <span className="ml-2 text-xs font-normal text-muted">
+          all models pooled · higher = stance held
+        </span>
+      </div>
       {sorted.map(s => {
         const color = scoreColor(s.awvs);
         const pct = (s.awvs / max) * 100;

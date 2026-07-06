@@ -250,6 +250,26 @@ export const rankingComparison = [
   { model: "Mistral Small", awmsRank: 7, awvsRank: 5, shift: 2 },
 ];
 
+// Gemini family sub-leaderboard: three tiers of one provider, run on the same
+// original question set as the main leaderboard. When a run finishes, add its
+// Model data and flip status to "done" (modelName keys into models[] or
+// geminiExtraModels[]).
+export type GeminiFamilyEntry = {
+  name: string;
+  tier: "Lite" | "Flash" | "Pro";
+  status: "done" | "running";
+  modelName?: string;
+};
+
+export const geminiFamily: GeminiFamilyEntry[] = [
+  { name: "Gemini 3.1 Pro", tier: "Pro", status: "running" },
+  { name: "Gemini 3.5 Flash", tier: "Flash", status: "running" },
+  { name: "Gemini 3.1 Flash Lite", tier: "Lite", status: "done", modelName: "Gemini Flash Lite" },
+];
+
+// Completed Gemini-family runs that are not part of the main 7-model board.
+export const geminiExtraModels: Model[] = [];
+
 export const metricLabels = {
   awvs: {
     label: "Score Under Pressure",

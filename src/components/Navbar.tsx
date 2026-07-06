@@ -52,12 +52,12 @@ export default function Navbar() {
             Findings
           </a>
           <a
-            href="https://huggingface.co/datasets/mycelium-ai/manta-benchmark-questions"
+            href="https://ukgovernmentbeis.github.io/inspect_evals/evals/manta/"
             target="_blank"
             rel="noopener noreferrer"
             className="ml-2 flex items-center gap-1.5 rounded-md bg-accent px-3.5 py-1.5 font-semibold text-white transition-opacity hover:opacity-90"
           >
-            Dataset
+            Inspect evals
             <ExternalIcon />
           </a>
         </div>

@@ -30,7 +30,7 @@ const SPECIES_ORDER: [string, string][] = [
   ["invertebrate", "Invertebrate"],
 ];
 
-function ChevronIcon({ open }: { open: boolean }) {
+export function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -65,7 +65,7 @@ function SortArrow({ active, dir }: { active: boolean; dir: SortDir }) {
 }
 
 /** Headline score: bar + CI whisker + value */
-function ScoreBarCI({ model }: { model: Model }) {
+export function ScoreBarCI({ model }: { model: Model }) {
   const color = scoreColor(model.meanAwvs);
   return (
     <div className="flex items-center gap-3">
@@ -118,7 +118,7 @@ function MiniBar({ label, value, color: colorOverride }: { label: string; value:
   );
 }
 
-function ExpandedDetail({ model }: { model: Model }) {
+export function ExpandedDetail({ model }: { model: Model }) {
   return (
     <div className="grid gap-6 border-t border-edge bg-surface/60 px-5 py-5 md:grid-cols-3">
       {/* Column 1: secondary metrics */}
@@ -250,7 +250,7 @@ export default function LeaderboardTable() {
                   {metricLabels.awvs.acronym} · turns 3–5 · higher is better
                 </span>
               </th>
-              <th scope="col" className="w-12 px-4 py-3">
+              <th scope="col" className="w-28 px-4 py-3">
                 <span className="sr-only">Details</span>
               </th>
             </tr>
@@ -295,12 +295,13 @@ export default function LeaderboardTable() {
                         type="button"
                         aria-expanded={isOpen}
                         aria-label={`${isOpen ? "Hide" : "Show"} details for ${model.name}`}
-                        className="cursor-pointer rounded-md p-1.5 text-muted transition-colors hover:bg-slate-100 hover:text-foreground focus-visible:outline-2 focus-visible:outline-accent"
+                        className="flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-slate-100 hover:text-foreground focus-visible:outline-2 focus-visible:outline-accent"
                         onClick={e => {
                           e.stopPropagation();
                           setExpanded(isOpen ? null : model.name);
                         }}
                       >
+                        {isOpen ? "Hide details" : "See details"}
                         <ChevronIcon open={isOpen} />
                       </button>
                     </td>
@@ -322,7 +323,7 @@ export default function LeaderboardTable() {
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-edge bg-surface px-4 py-2.5 text-xs text-muted">
         <span>
           Whiskers show bootstrap 95% confidence intervals (5,000 iterations) · N = 7,623
-          conversations · Click a row for breakdowns
+          conversations
         </span>
       </div>
     </div>

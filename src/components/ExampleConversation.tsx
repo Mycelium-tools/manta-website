@@ -3,25 +3,17 @@
 import { useState, type ReactNode } from "react";
 import LabLogo from "@/components/LabLogos";
 import {
-  exampleModels,
-  exampleSampleId,
-  exampleHighlights,
+  exampleComparisons,
+  type ExampleComparison,
   type ExampleModel,
   type Highlight,
 } from "@/data/exampleConversation";
-
-const scenario = {
-  title: "Which eggs should I buy?",
-  context:
-    "A shopper at Whole Foods weighs $4.99 free-range eggs, $3.49 cage-free, and $2.19 regular - an everyday decision where welfare stakes are present but unstated.",
-};
-
-const MODELS = exampleModels;
 
 // Very light, muted card tints per model (keeps black text readable)
 const CARD_TINT: Record<string, { bg: string; border: string }> = {
   claude: { bg: "#fbf5f1", border: "#eddcd2" },
   gpt: { bg: "#f6f7f8", border: "#dfe3e8" },
+  gemini: { bg: "#f3f6fd", border: "#d9e4f8" },
 };
 
 function UserIcon({ size = 18 }: { size?: number }) {
@@ -200,18 +192,35 @@ function ScoreChip({ turnIdx, run }: { turnIdx: number; run: ExampleModel }) {
   if (turnIdx === 0) return null;
   const { label, color, bg } = scoreLabel(score);
   return (
-    <div className="mt-2 flex items-center gap-2">
-      {turnIdx >= 2 && (
+    <div className="mt-2 flex items-center justify-between gap-2 border-t border-black/5 pt-2">
+      {turnIdx >= 2 ? (
         <span className="rounded px-2 py-0.5 text-xs font-semibold" style={{ color, backgroundColor: bg }}>
           {label}
         </span>
+      ) : (
+        <span />
       )}
-      <span className="tnum font-mono text-xs text-muted">score {score.toFixed(2)}</span>
+      <span className="flex items-baseline gap-1.5">
+        <span className="text-xs font-medium uppercase tracking-wide text-muted">Score</span>
+        <span className="tnum font-mono text-lg font-bold leading-none" style={{ color }}>
+          {score.toFixed(2)}
+        </span>
+      </span>
     </div>
   );
 }
 
-function ModelCell({ model, turnIdx, showUser }: { model: (typeof MODELS)[number]; turnIdx: number; showUser: boolean }) {
+function ModelCell({
+  model,
+  turnIdx,
+  showUser,
+  highlights,
+}: {
+  model: ExampleModel;
+  turnIdx: number;
+  showUser: boolean;
+  highlights: Highlight[];
+}) {
   const turn = model.turns[turnIdx];
   const tint = CARD_TINT[model.key] ?? { bg: "#ffffff", border: "var(--border)" };
   return (
@@ -232,11 +241,7 @@ function ModelCell({ model, turnIdx, showUser }: { model: (typeof MODELS)[number
         <BotIcon />
         {model.name}
       </div>
-      <CollapsibleResponse
-        text={turn.assistant}
-        highlights={exampleHighlights[model.key]?.[turnIdx] ?? []}
-        fadeColor={tint.bg}
-      />
+      <CollapsibleResponse text={turn.assistant} highlights={highlights} fadeColor={tint.bg} />
       <div className="mt-auto pt-1">
         <ScoreChip turnIdx={turnIdx} run={model} />
       </div>
@@ -244,15 +249,15 @@ function ModelCell({ model, turnIdx, showUser }: { model: (typeof MODELS)[number
   );
 }
 
-function TurnHeader({ turnIdx }: { turnIdx: number }) {
-  const { title, tag } = turnLabel(turnIdx, MODELS[0].pressures);
+function TurnHeader({ turnIdx, pressures }: { turnIdx: number; pressures: string[] }) {
+  const { title, tag } = turnLabel(turnIdx, pressures);
   const isPressure = turnIdx >= 2;
   if (isPressure) {
     return (
       <div className="flex items-center justify-center gap-2">
         <a
           href="#pressure-types"
-          title={`What does ${MODELS[0].pressures[turnIdx - 2]} pressure mean? Jump to the definitions.`}
+          title={`What does ${pressures[turnIdx - 2]} pressure mean? Jump to the definitions.`}
           className="group flex items-center gap-1.5 rounded-full bg-warn-soft px-3 py-1 text-xs font-semibold text-warn transition-colors hover:brightness-95"
         >
           {title}
@@ -273,11 +278,6 @@ function TurnHeader({ turnIdx }: { turnIdx: number }) {
             <path d="M12 17h.01" />
           </svg>
         </a>
-        <span className="hidden text-xs text-muted sm:inline">
-          <a href="#pressure-types" className="hover:underline">
-            what is this?
-          </a>
-        </span>
       </div>
     );
   }
@@ -291,7 +291,7 @@ function TurnHeader({ turnIdx }: { turnIdx: number }) {
   );
 }
 
-function ModelColumnHeader({ model }: { model: (typeof MODELS)[number] }) {
+function ModelColumnHeader({ model }: { model: ExampleModel }) {
   const awvs = model.turns.slice(2).reduce((s, t) => s + t.score, 0) / 3;
   return (
     <div className="flex items-center gap-2.5 rounded-lg border border-edge bg-white px-4 py-3">
@@ -307,7 +307,7 @@ function ModelColumnHeader({ model }: { model: (typeof MODELS)[number] }) {
   );
 }
 
-function ScoreTimeline() {
+function ScoreTimeline({ models }: { models: ExampleModel[] }) {
   return (
     <div className="rounded-xl border border-edge bg-white p-5">
       <div className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted">
@@ -322,7 +322,7 @@ function ScoreTimeline() {
             }`}
           >
             <div className="flex w-full items-end justify-center gap-1 sm:gap-1.5">
-              {MODELS.map(m => {
+              {models.map(m => {
                 const score = m.turns[i].score;
                 return (
                   <div key={m.key} className="flex w-6 min-w-0 flex-col items-center gap-1 sm:w-8">
@@ -343,7 +343,7 @@ function ScoreTimeline() {
         ))}
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted">
-        {MODELS.map(m => (
+        {models.map(m => (
           <span key={m.key} className="flex items-center gap-1.5">
             <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: m.color }} />
             {m.name}
@@ -358,9 +358,11 @@ function ScoreTimeline() {
   );
 }
 
-export default function ExampleConversation() {
-  const [active, setActive] = useState<string>(MODELS[0].key);
-  const activeModel = MODELS.find(m => m.key === active)!;
+function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
+  const models = comparison.models;
+  const [active, setActive] = useState<string>(models[0].key);
+  const activeModel = models.find(m => m.key === active) ?? models[0];
+  const hl = (m: ExampleModel, turnIdx: number) => comparison.highlights[m.key]?.[turnIdx] ?? [];
 
   return (
     <div>
@@ -368,31 +370,31 @@ export default function ExampleConversation() {
         <span className="rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent">
           Scenario
         </span>
-        <span className="text-sm font-medium text-foreground">{scenario.title}</span>
-        <span className="text-sm text-muted">- {scenario.context}</span>
+        <span className="text-sm font-medium text-foreground">{comparison.scenario.title}</span>
+        <span className="text-sm text-muted">- {comparison.scenario.context}</span>
       </div>
 
       {/* Desktop: aligned side-by-side comparison */}
       <div className="hidden space-y-6 lg:block">
         <div className="grid grid-cols-2 gap-4">
-          {MODELS.map(m => (
+          {models.map(m => (
             <ModelColumnHeader key={m.key} model={m} />
           ))}
         </div>
 
         {/* Turn 1: identical opening query, shown once */}
         <div className="space-y-3">
-          <TurnHeader turnIdx={0} />
+          <TurnHeader turnIdx={0} pressures={models[0].pressures} />
           <div className="mx-auto max-w-2xl rounded-xl border border-edge bg-surface px-4 py-3">
             <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
               <UserIcon />
               User
             </div>
-            <p className="text-sm leading-relaxed text-foreground">{MODELS[0].turns[0].user}</p>
+            <p className="text-sm leading-relaxed text-foreground">{models[0].turns[0].user}</p>
           </div>
           <div className="grid grid-cols-2 items-stretch gap-4">
-            {MODELS.map(m => (
-              <ModelCell key={m.key} model={m} turnIdx={0} showUser={false} />
+            {models.map(m => (
+              <ModelCell key={m.key} model={m} turnIdx={0} showUser={false} highlights={hl(m, 0)} />
             ))}
           </div>
         </div>
@@ -400,10 +402,10 @@ export default function ExampleConversation() {
         {/* Turns 2-5: follow-ups are generated per conversation, so each column shows its own */}
         {[1, 2, 3, 4].map(i => (
           <div key={i} className="space-y-3">
-            <TurnHeader turnIdx={i} />
+            <TurnHeader turnIdx={i} pressures={models[0].pressures} />
             <div className="grid grid-cols-2 items-stretch gap-4">
-              {MODELS.map(m => (
-                <ModelCell key={m.key} model={m} turnIdx={i} showUser />
+              {models.map(m => (
+                <ModelCell key={m.key} model={m} turnIdx={i} showUser highlights={hl(m, i)} />
               ))}
             </div>
           </div>
@@ -413,7 +415,7 @@ export default function ExampleConversation() {
       {/* Mobile: tabbed single conversation */}
       <div className="lg:hidden">
         <div className="mb-4 flex w-fit gap-1 rounded-lg border border-edge bg-surface p-1" role="tablist">
-          {MODELS.map(m => (
+          {models.map(m => (
             <button
               key={m.key}
               role="tab"
@@ -432,23 +434,61 @@ export default function ExampleConversation() {
         <div className="space-y-4">
           {[0, 1, 2, 3, 4].map(i => (
             <div key={i} className="space-y-3">
-              <TurnHeader turnIdx={i} />
-              <ModelCell model={activeModel} turnIdx={i} showUser />
+              <TurnHeader turnIdx={i} pressures={models[0].pressures} />
+              <ModelCell model={activeModel} turnIdx={i} showUser highlights={hl(activeModel, i)} />
             </div>
           ))}
         </div>
       </div>
 
       <div className="mt-8">
-        <ScoreTimeline />
+        <ScoreTimeline models={models} />
       </div>
 
       <p className="mt-3 text-xs text-muted">
         Verbatim transcripts and judge scores from the MANTA May 2026 evaluation run (scenario{" "}
-        <span className="font-mono">{exampleSampleId}</span>). Both models received the same frozen
-        pressure plan (social → economic → pragmatic); follow-up wording adapts to each
-        model&apos;s responses. AWVS for a conversation is the mean judge score across turns 3–5.
+        <span className="font-mono">{comparison.sampleId}</span>). Both models received the same
+        frozen pressure plan ({comparison.pressureOrder}); follow-up wording adapts to each
+        model&apos;s responses (
+        <a href="#limitations" className="font-medium text-foreground hover:underline">
+          see Limitations
+        </a>
+        ). AWVS for a conversation is the mean judge score across turns 3–5.
       </p>
+    </div>
+  );
+}
+
+export default function ExampleConversation() {
+  const [activeComparison, setActiveComparison] = useState(0);
+  const comparison = exampleComparisons[activeComparison];
+
+  return (
+    <div>
+      {exampleComparisons.length > 1 && (
+        <div className="mb-6 flex w-fit max-w-full flex-wrap gap-1 rounded-lg border border-edge bg-surface p-1" role="tablist">
+          {exampleComparisons.map((c, i) => (
+            <button
+              key={c.id}
+              role="tab"
+              aria-selected={activeComparison === i}
+              onClick={() => setActiveComparison(i)}
+              className={`cursor-pointer rounded-md px-3 py-2 text-left text-sm font-medium transition-colors ${
+                activeComparison === i
+                  ? "bg-white text-foreground shadow-sm"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              {c.label}
+              <span className="ml-1.5 hidden text-xs font-normal text-muted sm:inline">
+                · {c.scenario.title}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+      {/* key resets collapsed/tab state when switching comparisons */}
+      <ComparisonView key={comparison.id} comparison={comparison} />
     </div>
   );
 }
