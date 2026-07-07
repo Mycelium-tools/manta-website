@@ -7,7 +7,7 @@ const atkinson = Atkinson_Hyperlegible({ weight: ["400", "700"], subsets: ["lati
 export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md px-6">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between py-3">
+      <nav className="mx-auto flex max-w-6xl items-center justify-center py-3">
         <div className="flex items-center gap-3">
           <a
             href="#top"
