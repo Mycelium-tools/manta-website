@@ -31,7 +31,7 @@ export default function Navbar() {
               className="inline-block"
             />
             <span className={`${atkinson.className} font-bold text-foreground`}>
-              Mycelium
+              mycelium
             </span>
           </a>
         </div>
