@@ -125,9 +125,6 @@ export default function LeaderboardTable() {
         </table>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-edge bg-surface px-4 py-2.5 text-xs text-muted">
-        <span>N = 7,623 conversations</span>
-      </div>
     </div>
   );
 }

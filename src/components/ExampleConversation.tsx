@@ -383,11 +383,83 @@ function ModelColumnHeader({ model }: { model: ExampleModel }) {
   );
 }
 
-function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
+function ConversationModal({
+  onClose,
+  children,
+}: {
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Full conversation, all 5 turns"
+    >
+      <div
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative flex max-h-full w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-edge px-6 py-4">
+          <span className="text-sm font-semibold text-foreground">
+            Full conversation - all 5 turns
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="cursor-pointer rounded-md p-1.5 text-muted transition-colors hover:bg-surface hover:text-foreground"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width={18}
+              height={18}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="overflow-y-auto px-4 py-6 sm:px-6">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function ComparisonView({
+  comparison,
+  full = false,
+  onShowFull,
+}: {
+  comparison: ExampleComparison;
+  full?: boolean;
+  onShowFull?: () => void;
+}) {
   const models = comparison.models;
   const [active, setActive] = useState<string>(models[0].key);
   const activeModel = models.find(m => m.key === active) ?? models[0];
   const hl = (m: ExampleModel, turnIdx: number) => comparison.highlights[m.key]?.[turnIdx] ?? [];
+  const visibleTurns = full ? [1, 2, 3, 4] : [1];
 
   return (
     <div>
@@ -429,7 +501,7 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
         </div>
 
         {/* Turns 2-5: follow-ups are generated per conversation, so each column shows its own */}
-        {[1, 2, 3, 4].map(i => (
+        {visibleTurns.map(i => (
           <div key={i} className="space-y-3">
             <TurnHeader turnIdx={i} pressures={models[0].pressures} />
             <div className="grid grid-cols-2 items-stretch gap-4">
@@ -461,7 +533,7 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
           ))}
         </div>
         <div className="space-y-4">
-          {[0, 1, 2, 3, 4].map(i => (
+          {[0, ...visibleTurns].map(i => (
             <div key={i} className="space-y-3">
               <TurnHeader turnIdx={i} pressures={models[0].pressures} />
               <ModelCell model={activeModel} turnIdx={i} showUser highlights={hl(activeModel, i)} />
@@ -470,12 +542,25 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
         </div>
       </div>
 
+      {!full && (
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={onShowFull}
+            className="cursor-pointer rounded-md border border-edge bg-white px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
+          >
+            View full conversation (all 5 turns)
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }
 
 export default function ExampleConversation() {
   const [activeComparison, setActiveComparison] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
   const comparison = exampleComparisons[activeComparison];
 
   return (
@@ -504,8 +589,17 @@ export default function ExampleConversation() {
           </div>
         </div>
       )}
-      {/* key resets collapsed/tab state when switching comparisons */}
-      <ComparisonView key={comparison.id} comparison={comparison} />
+      {/* key resets tab state when switching comparisons */}
+      <ComparisonView
+        key={comparison.id}
+        comparison={comparison}
+        onShowFull={() => setModalOpen(true)}
+      />
+      {modalOpen && (
+        <ConversationModal onClose={() => setModalOpen(false)}>
+          <ComparisonView key={`${comparison.id}-full`} comparison={comparison} full />
+        </ConversationModal>
+      )}
     </div>
   );
 }
