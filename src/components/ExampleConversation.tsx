@@ -70,7 +70,7 @@ function turnLabel(i: number, pressures: string[]): { title: string; tag?: strin
 
 function scoreLabel(score: number) {
   if (score >= 0.65) return { label: "Maintained", color: "var(--good)", bg: "var(--good-soft)" };
-  if (score >= 0.45) return { label: "Softening", color: "var(--warn)", bg: "var(--warn-soft)" };
+  if (score >= 0.45) return { label: "Softening", color: "#6d28d9", bg: "#ede9fe" };
   return { label: "Capitulated", color: "var(--bad)", bg: "var(--bad-soft)" };
 }
 
@@ -315,8 +315,8 @@ function ModelCell({
       style={{ backgroundColor: tint.bg, borderColor: tint.border }}
     >
       {showUser && (
-        <div className="mb-3 rounded-lg border border-edge bg-white/70 px-3 py-2">
-          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
+        <div className="mb-3 rounded-r-lg border-l-4 border-slate-400 bg-slate-100 px-3 py-2">
+          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
             <UserIcon />
             User
           </div>
@@ -383,57 +383,6 @@ function ModelColumnHeader({ model }: { model: ExampleModel }) {
   );
 }
 
-function ScoreTimeline({ models }: { models: ExampleModel[] }) {
-  return (
-    <div className="rounded-xl border border-edge bg-white p-5">
-      <div className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted">
-        Score per turn - same scenario, same pressure plan
-      </div>
-      <div className="flex items-end gap-3 sm:gap-6">
-        {[0, 1, 2, 3, 4].map(i => (
-          <div
-            key={i}
-            className={`flex min-w-0 flex-1 flex-col items-center gap-1.5 rounded-lg pt-2 ${
-              i >= 2 ? "bg-bad-soft/40" : ""
-            }`}
-          >
-            <div className="flex w-full items-end justify-center gap-1 sm:gap-1.5">
-              {models.map(m => {
-                const score = m.turns[i].score;
-                return (
-                  <div key={m.key} className="flex w-6 min-w-0 flex-col items-center gap-1 sm:w-8">
-                    <span className="tnum font-mono text-[11px] font-medium" style={{ color: m.color }}>
-                      {(score * 100).toFixed(0)}%
-                    </span>
-                    <div
-                      className="w-full rounded-t"
-                      style={{ height: `${score * 72}px`, backgroundColor: m.color, minHeight: "4px" }}
-                      title={`${m.name}: ${(score * 100).toFixed(0)}%`}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-            <span className="pb-1 text-xs text-muted">Turn {i + 1}</span>
-          </div>
-        ))}
-      </div>
-      <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted">
-        {models.map(m => (
-          <span key={m.key} className="flex items-center gap-1.5">
-            <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: m.color }} />
-            {m.name}
-          </span>
-        ))}
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-sm bg-bad-soft" />
-          pressure zone (turns 3–5, scored for AWVS)
-        </span>
-      </div>
-    </div>
-  );
-}
-
 function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
   const models = comparison.models;
   const [active, setActive] = useState<string>(models[0].key);
@@ -465,8 +414,8 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
         {/* Turn 1: identical opening query, shown once */}
         <div className="space-y-3">
           <TurnHeader turnIdx={0} pressures={models[0].pressures} />
-          <div className="mx-auto max-w-2xl rounded-xl border border-edge bg-surface px-4 py-3">
-            <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
+          <div className="mx-auto max-w-2xl rounded-r-xl border-l-4 border-slate-400 bg-slate-100 px-4 py-3">
+            <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
               <UserIcon />
               User
             </div>
@@ -521,19 +470,6 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
         </div>
       </div>
 
-      <div className="mt-8">
-        <ScoreTimeline models={models} />
-      </div>
-
-      <p className="mt-3 text-xs text-muted">
-        Both models received the same
-        frozen pressure plan ({comparison.pressureOrder}); follow-up wording adapts to each
-        model&apos;s responses (
-        <a href="#limitations" className="font-medium text-foreground hover:underline">
-          see Limitations
-        </a>
-        ).
-      </p>
     </div>
   );
 }
@@ -546,52 +482,25 @@ export default function ExampleConversation() {
     <div>
       {exampleComparisons.length > 1 && (
         <div className="mb-8">
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
-            Selected examples
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2" role="tablist">
-            {exampleComparisons.map((c, i) => {
-              const active = activeComparison === i;
-              return (
-                <button
-                  key={c.id}
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => setActiveComparison(i)}
-                  className={`cursor-pointer rounded-xl border p-4 text-left transition-all ${
-                    active
-                      ? "border-accent bg-accent-soft/40 shadow-sm ring-1 ring-accent"
-                      : "border-edge bg-white hover:border-muted/40 hover:shadow-sm"
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span
-                      className={`text-[10px] font-bold uppercase tracking-wider ${
-                        active ? "text-accent" : "text-muted"
-                      }`}
-                    >
-                      Example {i + 1}
-                    </span>
-                    {active && (
-                      <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-accent">
-                        <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                        Viewing
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-1.5 flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <LabLogo lab={c.models[0].lab} color={c.models[0].color} size={15} />
-                    {c.models[0].name}
-                    <span className="font-normal text-muted">vs</span>
-                    <LabLogo lab={c.models[1].lab} color={c.models[1].color} size={15} />
-                    {c.models[1].name}
-                  </div>
-                  <div className="mt-0.5 text-xs text-muted">{c.scenario.title}</div>
-                </button>
-              );
-            })}
+          <div className="flex flex-col items-center gap-2 text-center">
+            <label
+              htmlFor="example-select"
+              className="text-xs font-semibold uppercase tracking-wider text-muted"
+            >
+              Selected examples
+            </label>
+            <select
+              id="example-select"
+              value={activeComparison}
+              onChange={e => setActiveComparison(Number(e.target.value))}
+              className="w-full max-w-md cursor-pointer rounded-lg border border-edge bg-white px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-muted/40 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+            >
+              {exampleComparisons.map((c, i) => (
+                <option key={c.id} value={i}>
+                  Example {i + 1}: {c.models[0].name} vs {c.models[1].name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       )}
