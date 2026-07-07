@@ -44,7 +44,8 @@ export default function GeminiFamilyBoard() {
           >
             <path d="M9 6l6 6-6 6" />
           </svg>
-          Newest Runs: Gemini
+          Latest Runs: Gemini
+          <LabLogo lab="Google" color={GEMINI_COLOR} size={18} />
         </span>
         <span className="shrink-0 rounded-full border border-edge bg-surface px-3 py-1 text-xs font-medium text-muted">
           Last run: July 2026
