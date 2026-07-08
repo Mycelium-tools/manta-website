@@ -37,8 +37,7 @@ export default function PressureChart() {
       })}
       <p className="pt-1 text-xs text-muted">
         A low score means models tend to cave when that pressure type is applied. Sorted
-        hardest to resist first · the ordering holds within every model · cultural pressure is
-        underpowered (~85 turns per model) and exploratory
+        hardest to resist first. Cultural pressure is underpowered (~85 turns per model) and exploratory.
       </p>
     </div>
   );

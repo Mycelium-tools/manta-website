@@ -1,13 +1,12 @@
 "use client";
 
-import { Fragment, useState } from "react";
 import {
   models,
   geminiFamily,
   geminiExtraModels,
   type Model,
 } from "@/data/results";
-import { ScoreBarCI, ExpandedDetail, ChevronIcon } from "@/components/LeaderboardTable";
+import { ScoreBarCI } from "@/components/LeaderboardTable";
 import LabLogo from "@/components/LabLogos";
 
 const GEMINI_COLOR = "#4285f4";
@@ -21,8 +20,6 @@ function findModel(modelName?: string): Model | undefined {
 }
 
 export default function GeminiFamilyBoard() {
-  const [expanded, setExpanded] = useState<string | null>(null);
-
   const entries = [...geminiFamily].sort((a, b) => {
     const am = findModel(a.modelName)?.meanAwvs ?? -1;
     const bm = findModel(b.modelName)?.meanAwvs ?? -1;
@@ -47,7 +44,8 @@ export default function GeminiFamilyBoard() {
           >
             <path d="M9 6l6 6-6 6" />
           </svg>
-          Newest Runs: Gemini
+          Latest Runs: Gemini
+          <LabLogo lab="Google" color={GEMINI_COLOR} size={18} />
         </span>
         <span className="shrink-0 rounded-full border border-edge bg-surface px-3 py-1 text-xs font-medium text-muted">
           Last run: July 2026
@@ -61,56 +59,35 @@ export default function GeminiFamilyBoard() {
         <div className="divide-y divide-edge">
           {entries.map((entry, i) => {
             const model = entry.status === "done" ? findModel(entry.modelName) : undefined;
-            const isOpen = expanded === entry.name;
             return (
-              <Fragment key={entry.name}>
-                <div
-                  className={`flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3.5 ${
-                    model ? "cursor-pointer transition-colors hover:bg-surface/70" : ""
+              <div
+                key={entry.name}
+                className="flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3.5"
+              >
+                <span
+                  className={`tnum inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${
+                    i === 0 ? "bg-accent text-white" : "bg-accent-soft text-accent"
                   }`}
-                  onClick={model ? () => setExpanded(isOpen ? null : entry.name) : undefined}
                 >
-                  <span
-                    className={`tnum inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${
-                      i === 0 ? "bg-accent text-white" : "bg-accent-soft text-accent"
-                    }`}
-                  >
-                    {i + 1}
-                  </span>
-                  <div className="flex w-56 shrink-0 items-center gap-2.5">
-                    <LabLogo lab="Google" color={GEMINI_COLOR} size={18} />
-                    <div className="font-semibold text-foreground">{entry.name}</div>
-                  </div>
-
-                  {model ? (
-                    <>
-                      <ScoreBarCI model={model} />
-                      <button
-                        type="button"
-                        aria-expanded={isOpen}
-                        aria-label={`${isOpen ? "Hide" : "Show"} details for ${entry.name}`}
-                        className="ml-auto flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-slate-100 hover:text-foreground focus-visible:outline-2 focus-visible:outline-accent"
-                        onClick={e => {
-                          e.stopPropagation();
-                          setExpanded(isOpen ? null : entry.name);
-                        }}
-                      >
-                        {isOpen ? "Hide details" : "See details"}
-                        <ChevronIcon open={isOpen} />
-                      </button>
-                    </>
-                  ) : (
-                    <span className="ml-auto flex items-center gap-2 rounded-full bg-awms-soft px-3 py-1 text-xs font-semibold text-awms">
-                      <span className="relative flex h-2 w-2">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-awms opacity-60" />
-                        <span className="relative inline-flex h-2 w-2 rounded-full bg-awms" />
-                      </span>
-                      Evaluation in progress
-                    </span>
-                  )}
+                  {i + 1}
+                </span>
+                <div className="flex w-56 shrink-0 items-center gap-2.5">
+                  <LabLogo lab="Google" color={GEMINI_COLOR} size={18} />
+                  <div className="font-semibold text-foreground">{entry.name}</div>
                 </div>
-                {isOpen && model && <ExpandedDetail model={model} />}
-              </Fragment>
+
+                {model ? (
+                  <ScoreBarCI model={model} />
+                ) : (
+                  <span className="ml-auto flex items-center gap-2 rounded-full bg-awms-soft px-3 py-1 text-xs font-semibold text-awms">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-awms opacity-60" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-awms" />
+                    </span>
+                    Evaluation in progress
+                  </span>
+                )}
+              </div>
             );
           })}
         </div>

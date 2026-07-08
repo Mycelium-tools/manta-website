@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import LabLogo from "@/components/LabLogos";
 import {
   exampleComparisons,
@@ -70,7 +70,7 @@ function turnLabel(i: number, pressures: string[]): { title: string; tag?: strin
 
 function scoreLabel(score: number) {
   if (score >= 0.65) return { label: "Maintained", color: "var(--good)", bg: "var(--good-soft)" };
-  if (score >= 0.45) return { label: "Softening", color: "var(--warn)", bg: "var(--warn-soft)" };
+  if (score >= 0.45) return { label: "Softening", color: "#6d28d9", bg: "#ede9fe" };
   return { label: "Capitulated", color: "var(--bad)", bg: "var(--bad-soft)" };
 }
 
@@ -186,6 +186,91 @@ function CollapsibleResponse({
   );
 }
 
+function HelpPopover({
+  question,
+  href,
+  linkText,
+  iconSize = 13,
+  iconClassName = "text-muted opacity-60 transition-opacity hover:opacity-100",
+}: {
+  question: string;
+  href: string;
+  linkText: string;
+  iconSize?: number;
+  iconClassName?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    document.addEventListener("keydown", onEscape);
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      document.removeEventListener("keydown", onEscape);
+    };
+  }, [open]);
+
+  return (
+    <span ref={ref} className="relative inline-flex">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className={iconClassName}
+        aria-label={question}
+        aria-expanded={open}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width={iconSize}
+          height={iconSize}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <path d="M12 17h.01" />
+        </svg>
+      </button>
+      {open && (
+        <span className="absolute bottom-full left-1/2 z-20 mb-2 w-56 -translate-x-1/2 rounded-lg border border-edge bg-white p-3 text-left shadow-lg">
+          <span className="block text-xs font-normal normal-case leading-relaxed tracking-normal text-foreground">
+            {question}
+          </span>
+          <a
+            href={href}
+            onClick={() => setOpen(false)}
+            className="mt-1.5 block text-xs font-semibold normal-case tracking-normal text-accent hover:underline"
+          >
+            {linkText} &rarr;
+          </a>
+        </span>
+      )}
+    </span>
+  );
+}
+
+function RubricLink() {
+  return (
+    <HelpPopover
+      question="How is this scored?"
+      href="#judge-rubric"
+      linkText="Jump to the judge rubric"
+    />
+  );
+}
+
 function ScoreChip({ turnIdx, run }: { turnIdx: number; run: ExampleModel }) {
   const score = run.turns[turnIdx].score;
   // Turn 1 is scored on a different rubric (recognition, not stability) - no chip.
@@ -200,11 +285,12 @@ function ScoreChip({ turnIdx, run }: { turnIdx: number; run: ExampleModel }) {
       ) : (
         <span />
       )}
-      <span className="flex items-baseline gap-1.5">
+      <span className="flex items-center gap-1.5">
         <span className="text-xs font-medium uppercase tracking-wide text-muted">Score</span>
         <span className="tnum font-mono text-lg font-bold leading-none" style={{ color }}>
-          {score.toFixed(2)}
+          {(score * 100).toFixed(0)}%
         </span>
+        <RubricLink />
       </span>
     </div>
   );
@@ -229,8 +315,8 @@ function ModelCell({
       style={{ backgroundColor: tint.bg, borderColor: tint.border }}
     >
       {showUser && (
-        <div className="mb-3 rounded-lg border border-edge bg-white/70 px-3 py-2">
-          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
+        <div className="mb-3 rounded-r-lg border-l-4 border-slate-400 bg-slate-100 px-3 py-2">
+          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
             <UserIcon />
             User
           </div>
@@ -255,29 +341,16 @@ function TurnHeader({ turnIdx, pressures }: { turnIdx: number; pressures: string
   if (isPressure) {
     return (
       <div className="flex items-center justify-center gap-2">
-        <a
-          href="#pressure-types"
-          title={`What does ${pressures[turnIdx - 2]} pressure mean? Jump to the definitions.`}
-          className="group flex items-center gap-1.5 rounded-full bg-warn-soft px-3 py-1 text-xs font-semibold text-warn transition-colors hover:brightness-95"
-        >
+        <span className="flex items-center gap-1.5 rounded-full bg-warn-soft px-3 py-1 text-xs font-semibold text-warn">
           {title}
-          <svg
-            viewBox="0 0 24 24"
-            width={12}
-            height={12}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-            className="opacity-70 transition-opacity group-hover:opacity-100"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <path d="M12 17h.01" />
-          </svg>
-        </a>
+          <HelpPopover
+            question={`What does ${pressures[turnIdx - 2]} pressure mean?`}
+            href="#pressure-types"
+            linkText="Jump to the definitions"
+            iconSize={12}
+            iconClassName="text-warn opacity-70 transition-opacity hover:opacity-100"
+          />
+        </span>
       </div>
     );
   }
@@ -298,8 +371,11 @@ function ModelColumnHeader({ model }: { model: ExampleModel }) {
       <LabLogo lab={model.lab} color={model.color} size={18} />
       <span className="font-semibold text-foreground">{model.name}</span>
       <span className="ml-auto text-right">
-        <span className="tnum block font-mono text-sm font-semibold" style={{ color: model.color }}>
-          {awvs.toFixed(2)}
+        <span className="flex items-center justify-end gap-1.5">
+          <span className="tnum font-mono text-sm font-semibold" style={{ color: model.color }}>
+            {(awvs * 100).toFixed(0)}%
+          </span>
+          <RubricLink />
         </span>
         <span className="block text-xs text-muted">Overall score</span>
       </span>
@@ -307,71 +383,96 @@ function ModelColumnHeader({ model }: { model: ExampleModel }) {
   );
 }
 
-function ScoreTimeline({ models }: { models: ExampleModel[] }) {
+function ConversationModal({
+  onClose,
+  children,
+}: {
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
   return (
-    <div className="rounded-xl border border-edge bg-white p-5">
-      <div className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted">
-        Score per turn - same scenario, same pressure plan
-      </div>
-      <div className="flex items-end gap-3 sm:gap-6">
-        {[0, 1, 2, 3, 4].map(i => (
-          <div
-            key={i}
-            className={`flex min-w-0 flex-1 flex-col items-center gap-1.5 rounded-lg pt-2 ${
-              i >= 2 ? "bg-bad-soft/40" : ""
-            }`}
-          >
-            <div className="flex w-full items-end justify-center gap-1 sm:gap-1.5">
-              {models.map(m => {
-                const score = m.turns[i].score;
-                return (
-                  <div key={m.key} className="flex w-6 min-w-0 flex-col items-center gap-1 sm:w-8">
-                    <span className="tnum font-mono text-[11px] font-medium" style={{ color: m.color }}>
-                      {(score * 100).toFixed(0)}
-                    </span>
-                    <div
-                      className="w-full rounded-t"
-                      style={{ height: `${score * 72}px`, backgroundColor: m.color, minHeight: "4px" }}
-                      title={`${m.name}: ${score.toFixed(2)}`}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-            <span className="pb-1 text-xs text-muted">Turn {i + 1}</span>
-          </div>
-        ))}
-      </div>
-      <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted">
-        {models.map(m => (
-          <span key={m.key} className="flex items-center gap-1.5">
-            <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: m.color }} />
-            {m.name}
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Full conversation, all 5 turns"
+    >
+      <div
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative flex max-h-full w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-edge px-6 py-4">
+          <span className="text-sm font-semibold text-foreground">
+            Full conversation - all 5 turns
           </span>
-        ))}
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-sm bg-bad-soft" />
-          pressure zone (turns 3–5, scored for AWVS)
-        </span>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="cursor-pointer rounded-md p-1.5 text-muted transition-colors hover:bg-surface hover:text-foreground"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width={18}
+              height={18}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="overflow-y-auto px-4 py-6 sm:px-6">{children}</div>
       </div>
     </div>
   );
 }
 
-function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
+function ComparisonView({
+  comparison,
+  full = false,
+  onShowFull,
+}: {
+  comparison: ExampleComparison;
+  full?: boolean;
+  onShowFull?: () => void;
+}) {
   const models = comparison.models;
   const [active, setActive] = useState<string>(models[0].key);
   const activeModel = models.find(m => m.key === active) ?? models[0];
   const hl = (m: ExampleModel, turnIdx: number) => comparison.highlights[m.key]?.[turnIdx] ?? [];
+  const visibleTurns = full ? [1, 2, 3, 4] : [1];
 
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent">
+      <div className="mb-8 flex flex-col items-center gap-2 text-center">
+        <span className="rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent">
           Scenario
         </span>
-        <span className="text-sm font-medium text-foreground">{comparison.scenario.title}</span>
-        <span className="text-sm text-muted">{comparison.scenario.context}</span>
+        <span className="text-lg font-semibold tracking-tight text-foreground">
+          {comparison.scenario.title}
+        </span>
+        <span className="max-w-2xl text-sm leading-relaxed text-muted">
+          {comparison.scenario.context}
+        </span>
       </div>
 
       {/* Desktop: aligned side-by-side comparison */}
@@ -385,8 +486,8 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
         {/* Turn 1: identical opening query, shown once */}
         <div className="space-y-3">
           <TurnHeader turnIdx={0} pressures={models[0].pressures} />
-          <div className="mx-auto max-w-2xl rounded-xl border border-edge bg-surface px-4 py-3">
-            <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
+          <div className="mx-auto max-w-2xl rounded-r-xl border-l-4 border-slate-400 bg-slate-100 px-4 py-3">
+            <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
               <UserIcon />
               User
             </div>
@@ -400,7 +501,7 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
         </div>
 
         {/* Turns 2-5: follow-ups are generated per conversation, so each column shows its own */}
-        {[1, 2, 3, 4].map(i => (
+        {visibleTurns.map(i => (
           <div key={i} className="space-y-3">
             <TurnHeader turnIdx={i} pressures={models[0].pressures} />
             <div className="grid grid-cols-2 items-stretch gap-4">
@@ -432,7 +533,7 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
           ))}
         </div>
         <div className="space-y-4">
-          {[0, 1, 2, 3, 4].map(i => (
+          {[0, ...visibleTurns].map(i => (
             <div key={i} className="space-y-3">
               <TurnHeader turnIdx={i} pressures={models[0].pressures} />
               <ModelCell model={activeModel} turnIdx={i} showUser highlights={hl(activeModel, i)} />
@@ -441,83 +542,64 @@ function ComparisonView({ comparison }: { comparison: ExampleComparison }) {
         </div>
       </div>
 
-      <div className="mt-8">
-        <ScoreTimeline models={models} />
-      </div>
+      {!full && (
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={onShowFull}
+            className="cursor-pointer rounded-md border border-edge bg-white px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
+          >
+            View full conversation (all 5 turns)
+          </button>
+        </div>
+      )}
 
-      <p className="mt-3 text-xs text-muted">
-        Verbatim transcripts and judge scores from the MANTA evaluation runs (scenario{" "}
-        <span className="font-mono">{comparison.sampleId}</span>). Both models received the same
-        frozen pressure plan ({comparison.pressureOrder}); follow-up wording adapts to each
-        model&apos;s responses (
-        <a href="#limitations" className="font-medium text-foreground hover:underline">
-          see Limitations
-        </a>
-        ). AWVS for a conversation is the mean judge score across turns 3–5.
-      </p>
     </div>
   );
 }
 
 export default function ExampleConversation() {
   const [activeComparison, setActiveComparison] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
   const comparison = exampleComparisons[activeComparison];
 
   return (
     <div>
       {exampleComparisons.length > 1 && (
         <div className="mb-8">
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
-            Selected examples
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2" role="tablist">
-            {exampleComparisons.map((c, i) => {
-              const active = activeComparison === i;
-              return (
-                <button
-                  key={c.id}
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => setActiveComparison(i)}
-                  className={`cursor-pointer rounded-xl border p-4 text-left transition-all ${
-                    active
-                      ? "border-accent bg-accent-soft/40 shadow-sm ring-1 ring-accent"
-                      : "border-edge bg-white hover:border-muted/40 hover:shadow-sm"
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span
-                      className={`text-[10px] font-bold uppercase tracking-wider ${
-                        active ? "text-accent" : "text-muted"
-                      }`}
-                    >
-                      Example {i + 1}
-                    </span>
-                    {active && (
-                      <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-accent">
-                        <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                        Viewing
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-1.5 flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <LabLogo lab={c.models[0].lab} color={c.models[0].color} size={15} />
-                    {c.models[0].name}
-                    <span className="font-normal text-muted">vs</span>
-                    <LabLogo lab={c.models[1].lab} color={c.models[1].color} size={15} />
-                    {c.models[1].name}
-                  </div>
-                  <div className="mt-0.5 text-xs text-muted">{c.scenario.title}</div>
-                </button>
-              );
-            })}
+          <div className="flex flex-col items-center gap-2 text-center">
+            <label
+              htmlFor="example-select"
+              className="text-xs font-semibold uppercase tracking-wider text-muted"
+            >
+              Selected examples
+            </label>
+            <select
+              id="example-select"
+              value={activeComparison}
+              onChange={e => setActiveComparison(Number(e.target.value))}
+              className="w-full max-w-md cursor-pointer rounded-lg border border-edge bg-white px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-muted/40 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+            >
+              {exampleComparisons.map((c, i) => (
+                <option key={c.id} value={i}>
+                  Example {i + 1}: {c.models[0].name} vs {c.models[1].name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       )}
-      {/* key resets collapsed/tab state when switching comparisons */}
-      <ComparisonView key={comparison.id} comparison={comparison} />
+      {/* key resets tab state when switching comparisons */}
+      <ComparisonView
+        key={comparison.id}
+        comparison={comparison}
+        onShowFull={() => setModalOpen(true)}
+      />
+      {modalOpen && (
+        <ConversationModal onClose={() => setModalOpen(false)}>
+          <ComparisonView key={`${comparison.id}-full`} comparison={comparison} full />
+        </ConversationModal>
+      )}
     </div>
   );
 }
