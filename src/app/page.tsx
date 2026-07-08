@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import LeaderboardTable from "@/components/LeaderboardTable";
-import GeminiFamilyBoard from "@/components/GeminiFamilyBoard";
 import ExampleConversation from "@/components/ExampleConversation";
 import PressureChart from "@/components/PressureChart";
 import SpeciesChart from "@/components/SpeciesChart";
@@ -395,14 +394,7 @@ export default function Home() {
                 mean judge score across turns 3-5)
               </p>
             </div>
-            <div className="mb-2 flex justify-end">
-              <span className="rounded-full border border-edge bg-white px-3 py-1 text-xs font-medium text-muted">
-                Last run: July 2026
-              </span>
-            </div>
             <LeaderboardTable />
-
-            <GeminiFamilyBoard />
 
             {/* Secondary results: 2-up grid */}
             <div className="mt-10 grid gap-6 lg:grid-cols-2">

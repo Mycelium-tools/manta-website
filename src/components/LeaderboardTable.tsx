@@ -90,6 +90,9 @@ export default function LeaderboardTable() {
                   {metricLabels.awvs.acronym} · turns 3–5 · higher is better
                 </span>
               </th>
+              <th scope="col" className="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted">
+                Latest run
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -118,6 +121,9 @@ export default function LeaderboardTable() {
                 </td>
                 <td className="px-4 py-3.5">
                   <ScoreBarCI model={model} />
+                </td>
+                <td className="whitespace-nowrap px-4 py-3.5 text-sm text-muted">
+                  {model.latestRun}
                 </td>
               </tr>
             ))}
