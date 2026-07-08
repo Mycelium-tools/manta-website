@@ -7,6 +7,17 @@ import PressureChart from "@/components/PressureChart";
 import SpeciesChart from "@/components/SpeciesChart";
 import { metricLabels, scoreColor, scoreBg } from "@/data/results";
 import { ArxivIcon, HuggingFaceIcon, GitHubIcon, InspectIcon } from "@/components/BrandIcons";
+import CopyButton from "@/components/CopyButton";
+
+const bibtex = `@article{luong2026manta,
+  title={Do LLMs Hold Their Values? MANTA: A Multi-Turn Adversarial
+         Benchmark for Animal Welfare Reasoning},
+  author={Luong, Isabella and Chen, Joyee and Kanepajs, Arturs and
+          Brazilek, Jasmine and Ghose, Sankalpa and Williams-King, David
+          and Le, Linh and Lu, Allen},
+  journal={arXiv preprint arXiv:2605.16301},
+  year={2026}
+}`;
 
 export default function Home() {
   return (
@@ -385,41 +396,36 @@ export default function Home() {
         </section>
 
         {/* ── Results ──────────────────────────────────────────────────── */}
-        <section id="results" className="scroll-mt-16 bg-surface px-6 py-14">
-          <div className="mx-auto max-w-6xl">
-            <div className="mb-4 flex flex-col items-center gap-3 text-center">
+        <section id="results" className="scroll-mt-16 bg-surface px-6 py-16">
+          <div className="mx-auto max-w-5xl">
+            <div className="mb-8 text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Results</h2>
-              <p className="max-w-3xl text-sm leading-relaxed text-muted">
-                Models are ranked by <b>{metricLabels.awvs.label}</b> (the
-                mean judge score across turns 3-5)
-              </p>
             </div>
             <LeaderboardTable />
 
             {/* Secondary results: 2-up grid */}
-            <div className="mt-10 grid gap-6 lg:grid-cols-2">
-              <div>
+            <div className="mt-12 grid gap-10 lg:grid-cols-2">
+              <div className="flex flex-col">
                 <h4 className="text-base font-semibold tracking-tight">
-                  Which pressure types make models cave?
+                  How well do models hold up to each pressure type?
                 </h4>
                 <p className="mt-1 text-xs leading-relaxed text-muted">
-                  Pooled across models, social pressure produces the lowest scores (45%),
-                  followed by economic (47%); epistemic pressure is the easiest to resist
-                  (64%).
+                  Social and economic pressure break models most. Doubts about whether
+                  animals feel pain are the easiest to resist.
                 </p>
-                <div className="mt-3 rounded-xl border border-edge bg-white p-5 shadow-sm">
+                <div className="mt-3 flex-1 rounded-xl bg-white p-5 shadow-sm">
                   <PressureChart />
                 </div>
               </div>
-              <div>
+              <div className="flex flex-col">
                 <h4 className="text-base font-semibold tracking-tight">
                   Models mirror human biases on animals
                 </h4>
                 <p className="mt-1 text-xs leading-relaxed text-muted">
-                  Companion animals (60%) score above wild (52%), farmed (46%), and
-                  invertebrates (40%). The hierarchy holds across every model.
+                  Companion animals are protected more than farmed animals or
+                  invertebrates. The pattern holds in every model.
                 </p>
-                <div className="mt-3 rounded-xl border border-edge bg-white p-5 shadow-sm">
+                <div className="mt-3 flex-1 rounded-xl bg-white p-5 shadow-sm">
                   <SpeciesChart />
                 </div>
               </div>
@@ -529,17 +535,12 @@ export default function Home() {
         <section id="citation" className="scroll-mt-16 px-6 py-14">
           <div className="mx-auto max-w-3xl">
             <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">Citation</h2>
-            <pre className="mt-4 overflow-x-auto rounded-xl border border-edge bg-surface p-5 text-xs leading-relaxed text-foreground">
-{`@article{luong2026manta,
-  title={Do LLMs Hold Their Values? MANTA: A Multi-Turn Adversarial
-         Benchmark for Animal Welfare Reasoning},
-  author={Luong, Isabella and Chen, Joyee and Kanepajs, Arturs and
-          Brazilek, Jasmine and Ghose, Sankalpa and Williams-King, David
-          and Le, Linh and Lu, Allen},
-  journal={arXiv preprint arXiv:2605.16301},
-  year={2026}
-}`}
-            </pre>
+            <div className="relative mt-8">
+              <pre className="overflow-x-auto rounded-xl bg-foreground p-5 pr-14 font-mono text-xs leading-relaxed text-background ring-1 ring-black/5">
+{bibtex}
+              </pre>
+              <CopyButton value={bibtex} className="absolute right-3 top-3" />
+            </div>
             <p className="mt-6 text-center text-sm text-muted">
               For any inquiries or feedback, please contact us at{" "}
               <a
