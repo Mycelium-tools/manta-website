@@ -2,10 +2,13 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import LabLogo from "@/components/LabLogos";
+import TrajectoryChart from "@/components/TrajectoryChart";
+import { scoreColor } from "@/data/results";
 import {
   exampleComparisons,
   type ExampleComparison,
   type ExampleModel,
+  type ExampleTurn,
   type Highlight,
 } from "@/data/exampleConversation";
 
@@ -15,6 +18,14 @@ const CARD_TINT: Record<string, { bg: string; border: string }> = {
   gpt: { bg: "#f6f7f8", border: "#dfe3e8" },
   gemini: { bg: "#f3f6fd", border: "#d9e4f8" },
 };
+
+/** Overall score for the comparison view: mean judge score over the three
+ * pressure turns (turns 3-5), matching the leaderboard metric. */
+function overallScore(model: ExampleModel): number {
+  return model.turns.slice(2).reduce((s, t) => s + t.score, 0) / 3;
+}
+
+const pct = (score: number) => `${Math.round(score * 100)}%`;
 
 function UserIcon({ size = 18 }: { size?: number }) {
   return (
@@ -271,6 +282,350 @@ function RubricLink() {
   );
 }
 
+/** Curated verbatim excerpt: " … " joins fragments, [brackets] are editorial,
+ * ** and * are display emphasis (checked by scripts/verify_examples.py). */
+function ExcerptText({ turn }: { turn: ExampleTurn }) {
+  const tokens = turn.excerpt.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\])/g);
+  return (
+    <div className="text-sm leading-relaxed text-foreground">
+      <p>
+        <span aria-hidden="true">&ldquo;</span>
+        {tokens.map((tok, i) => {
+          if (tok.startsWith("**"))
+            return (
+              <strong key={i} className="font-semibold">
+                {tok.slice(2, -2)}
+              </strong>
+            );
+          if (tok.startsWith("*")) return <em key={i}>{tok.slice(1, -1)}</em>;
+          if (tok.startsWith("[")) return (
+            <span key={i} className="text-muted">
+              {tok}
+            </span>
+          );
+          return <span key={i}>{tok}</span>;
+        })}
+        <span aria-hidden="true">&rdquo;</span>
+      </p>
+      {turn.excerptNote && (
+        <p className="mt-1.5 text-xs italic text-muted">{turn.excerptNote}</p>
+      )}
+    </div>
+  );
+}
+
+function TurnHeader({ turnIdx, pressures }: { turnIdx: number; pressures: string[] }) {
+  const { title, tag } = turnLabel(turnIdx, pressures);
+  const isPressure = turnIdx >= 2;
+  if (isPressure) {
+    return (
+      <div className="flex items-center justify-center gap-2">
+        <span className="flex items-center gap-1.5 rounded-full bg-warn-soft px-3 py-1 text-xs font-semibold text-warn">
+          {title}
+          <HelpPopover
+            question={`What does ${pressures[turnIdx - 2]} pressure mean?`}
+            href="#pressure-types"
+            linkText="Jump to the definitions"
+            iconSize={12}
+            iconClassName="text-warn opacity-70 transition-opacity hover:opacity-100"
+          />
+        </span>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center justify-center gap-2">
+      <span className="rounded-full bg-surface px-3 py-1 text-xs font-semibold text-muted">
+        {title}
+      </span>
+      {tag && <span className="text-xs text-muted">{tag}</span>}
+    </div>
+  );
+}
+
+/* ---------- scenario tab picker ---------- */
+
+function ScenarioTabs({
+  active,
+  onSelect,
+}: {
+  active: number;
+  onSelect: (i: number) => void;
+}) {
+  const listRef = useRef<HTMLDivElement>(null);
+
+  function onKeyDown(e: React.KeyboardEvent) {
+    let next = active;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = (active + 1) % exampleComparisons.length;
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp")
+      next = (active - 1 + exampleComparisons.length) % exampleComparisons.length;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = exampleComparisons.length - 1;
+    else return;
+    e.preventDefault();
+    onSelect(next);
+    listRef.current?.querySelectorAll<HTMLButtonElement>("[role=tab]")[next]?.focus();
+  }
+
+  return (
+    <div
+      ref={listRef}
+      role="tablist"
+      aria-label="Example scenarios"
+      onKeyDown={onKeyDown}
+      className="grid grid-cols-1 overflow-hidden rounded-xl border border-edge bg-surface sm:grid-cols-2 lg:grid-cols-4"
+    >
+      {exampleComparisons.map((c, i) => {
+        const selected = i === active;
+        return (
+          <button
+            key={c.id}
+            type="button"
+            role="tab"
+            id={`scenario-tab-${i}`}
+            aria-selected={selected}
+            aria-controls="scenario-panel"
+            tabIndex={selected ? 0 : -1}
+            onClick={() => onSelect(i)}
+            className={`flex cursor-pointer flex-col gap-2 border-b-[3px] border-edge/60 px-4 py-3.5 text-left transition-colors last:border-r-0 sm:border-r ${
+              selected
+                ? "border-b-accent bg-white"
+                : "border-b-transparent hover:bg-white/60"
+            }`}
+          >
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-muted">
+              Scenario {i + 1}
+            </span>
+            <span className="text-sm font-semibold leading-snug text-foreground">
+              {c.scenario.title}
+            </span>
+            <span className="flex flex-wrap gap-1.5">
+              {c.models.map(m => {
+                const overall = overallScore(m);
+                return (
+                  <span
+                    key={m.key}
+                    className="tnum inline-flex items-center gap-1.5 rounded-full border border-edge bg-white px-2 py-0.5 font-mono text-[11px]"
+                    title={`${m.name}: ${pct(overall)} overall (turns 3-5)`}
+                  >
+                    <LabLogo lab={m.lab} color={m.color} size={11} />
+                    <b className="font-semibold" style={{ color: scoreColor(overall) }}>
+                      {pct(overall)}
+                    </b>
+                  </span>
+                );
+              })}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ---------- per-turn excerpt cards ---------- */
+
+function ExcerptCell({
+  model,
+  turnIdx,
+  showUser,
+}: {
+  model: ExampleModel;
+  turnIdx: number;
+  showUser: boolean;
+}) {
+  const turn = model.turns[turnIdx];
+  const tint = CARD_TINT[model.key] ?? { bg: "#ffffff", border: "var(--border)" };
+  const color = scoreColor(turn.score);
+  const chip = turnIdx >= 2 ? scoreLabel(turn.score) : null;
+  return (
+    <div
+      className="flex h-full flex-col rounded-xl border p-4"
+      style={{ backgroundColor: tint.bg, borderColor: tint.border }}
+    >
+      {showUser && (
+        <div className="mb-3 rounded-r-lg border-l-4 border-slate-400 bg-slate-100 px-3 py-2">
+          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+            <UserIcon size={14} />
+            User
+          </div>
+          <p className="text-xs leading-relaxed text-foreground">{turn.user}</p>
+        </div>
+      )}
+      <div className="mb-1.5 flex items-center justify-between gap-2">
+        <span
+          className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide"
+          style={{ color: model.color }}
+        >
+          <BotIcon size={15} />
+          {model.name}
+        </span>
+        {turnIdx >= 1 && (
+          <span className="flex items-center gap-1.5">
+            {chip && (
+              <span
+                className="rounded px-1.5 py-0.5 text-[10px] font-semibold"
+                style={{ color: chip.color, backgroundColor: chip.bg }}
+              >
+                {chip.label}
+              </span>
+            )}
+            <span className="tnum font-mono text-base font-bold leading-none" style={{ color }}>
+              {pct(turn.score)}
+            </span>
+            <RubricLink />
+          </span>
+        )}
+      </div>
+      {turnIdx >= 1 && (
+        <div className="mb-2.5 h-1.5 overflow-hidden rounded-full bg-slate-200/70">
+          <div
+            className="h-full rounded-full"
+            style={{ width: pct(turn.score), backgroundColor: color }}
+          />
+        </div>
+      )}
+      <ExcerptText turn={turn} />
+    </div>
+  );
+}
+
+function ExcerptTurns({ comparison }: { comparison: ExampleComparison }) {
+  const models = comparison.models;
+  return (
+    <div className="space-y-5">
+      {[0, 1, 2, 3, 4].map(i => (
+        <div key={i} className="space-y-3">
+          <TurnHeader turnIdx={i} pressures={models[0].pressures} />
+          {i === 0 && (
+            <div className="mx-auto max-w-2xl rounded-r-xl border-l-4 border-slate-400 bg-slate-100 px-4 py-3">
+              <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                <UserIcon size={14} />
+                User
+              </div>
+              <p className="text-sm leading-relaxed text-foreground">{models[0].turns[0].user}</p>
+            </div>
+          )}
+          <div className="grid items-stretch gap-4 lg:grid-cols-2">
+            {models.map(m => (
+              <ExcerptCell key={m.key} model={m} turnIdx={i} showUser={i > 0} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- scenario panel ---------- */
+
+function ScenarioPanel({
+  comparison,
+  activeIdx,
+  onShowFull,
+}: {
+  comparison: ExampleComparison;
+  activeIdx: number;
+  onShowFull: () => void;
+}) {
+  return (
+    <section
+      id="scenario-panel"
+      role="tabpanel"
+      aria-labelledby={`scenario-tab-${activeIdx}`}
+      className="mt-6"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+        <div className="max-w-2xl">
+          <h3 className="text-xl font-semibold tracking-tight text-foreground">
+            {comparison.scenario.title}
+          </h3>
+          <p className="mt-1.5 text-sm leading-relaxed text-muted">
+            {comparison.scenario.context}
+          </p>
+        </div>
+        <div className="flex gap-2.5">
+          {comparison.models.map(m => {
+            const overall = overallScore(m);
+            return (
+              <div
+                key={m.key}
+                className="min-w-[7.5rem] rounded-xl border border-edge bg-surface px-3.5 py-2.5"
+              >
+                <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
+                  <LabLogo lab={m.lab} color={m.color} size={13} />
+                  {m.name}
+                </div>
+                <div className="mt-1 flex items-center gap-1.5">
+                  <span
+                    className="tnum font-mono text-xl font-bold leading-none"
+                    style={{ color: scoreColor(overall) }}
+                  >
+                    {pct(overall)}
+                  </span>
+                  <RubricLink />
+                </div>
+                <div className="mt-0.5 text-[10px] text-muted">averaged turns 3-5</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-5 rounded-r-xl border border-l-4 border-edge border-l-foreground bg-surface px-4 py-3">
+        <div className="font-mono text-[10px] font-semibold uppercase tracking-widest text-muted">
+          TLDR
+        </div>
+        <p className="mt-1 text-sm leading-relaxed text-foreground">{comparison.tell}</p>
+      </div>
+
+      <div className="mt-5 rounded-xl border border-edge bg-surface px-4 pb-2 pt-3.5 sm:px-5">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-muted">
+            Judge score, turn by turn
+          </span>
+          <span className="flex gap-4">
+            {comparison.models.map(m => (
+              <span key={m.key} className="flex items-center gap-1.5 font-mono text-[11px] text-muted">
+                <span
+                  className="inline-block h-0.5 w-4 rounded-full"
+                  style={{ backgroundColor: m.color }}
+                />
+                {m.name}
+              </span>
+            ))}
+          </span>
+        </div>
+        <TrajectoryChart models={comparison.models} />
+        <p className="pb-1.5 pt-1 text-[11px] leading-relaxed text-muted">
+          Turn 1 is scored on a separate rubric (whether the model raises welfare unprompted)
+          and isn&apos;t shown.
+        </p>
+      </div>
+
+      <div className="mt-6">
+        <ExcerptTurns comparison={comparison} />
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-dashed border-edge pt-5">
+        <p className="max-w-xl text-xs leading-relaxed text-muted">
+          Excerpts are verbatim fragments of each model&apos;s response; [bracketed] words are
+          editorial.
+        </p>
+        <button
+          type="button"
+          onClick={onShowFull}
+          className="cursor-pointer rounded-md bg-foreground px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        >
+          View full conversation (all 5 turns) &rarr;
+        </button>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- full-transcript view (modal) ---------- */
+
 function ScoreChip({ turnIdx, run }: { turnIdx: number; run: ExampleModel }) {
   const score = run.turns[turnIdx].score;
   // Turn 1 is scored on a different rubric (recognition, not stability) - no chip.
@@ -335,37 +690,8 @@ function ModelCell({
   );
 }
 
-function TurnHeader({ turnIdx, pressures }: { turnIdx: number; pressures: string[] }) {
-  const { title, tag } = turnLabel(turnIdx, pressures);
-  const isPressure = turnIdx >= 2;
-  if (isPressure) {
-    return (
-      <div className="flex items-center justify-center gap-2">
-        <span className="flex items-center gap-1.5 rounded-full bg-warn-soft px-3 py-1 text-xs font-semibold text-warn">
-          {title}
-          <HelpPopover
-            question={`What does ${pressures[turnIdx - 2]} pressure mean?`}
-            href="#pressure-types"
-            linkText="Jump to the definitions"
-            iconSize={12}
-            iconClassName="text-warn opacity-70 transition-opacity hover:opacity-100"
-          />
-        </span>
-      </div>
-    );
-  }
-  return (
-    <div className="flex items-center justify-center gap-2">
-      <span className="rounded-full bg-surface px-3 py-1 text-xs font-semibold text-muted">
-        {title}
-      </span>
-      {tag && <span className="text-xs text-muted">{tag}</span>}
-    </div>
-  );
-}
-
 function ModelColumnHeader({ model }: { model: ExampleModel }) {
-  const awvs = model.turns.slice(2).reduce((s, t) => s + t.score, 0) / 3;
+  const overall = overallScore(model);
   return (
     <div className="flex items-center gap-2.5 rounded-lg border border-edge bg-white px-4 py-3">
       <LabLogo lab={model.lab} color={model.color} size={18} />
@@ -373,7 +699,7 @@ function ModelColumnHeader({ model }: { model: ExampleModel }) {
       <span className="ml-auto text-right">
         <span className="flex items-center justify-end gap-1.5">
           <span className="tnum font-mono text-sm font-semibold" style={{ color: model.color }}>
-            {(awvs * 100).toFixed(0)}%
+            {(overall * 100).toFixed(0)}%
           </span>
           <RubricLink />
         </span>
@@ -446,20 +772,11 @@ function ConversationModal({
   );
 }
 
-function ComparisonView({
-  comparison,
-  full = false,
-  onShowFull,
-}: {
-  comparison: ExampleComparison;
-  full?: boolean;
-  onShowFull?: () => void;
-}) {
+function FullConversation({ comparison }: { comparison: ExampleComparison }) {
   const models = comparison.models;
   const [active, setActive] = useState<string>(models[0].key);
   const activeModel = models.find(m => m.key === active) ?? models[0];
   const hl = (m: ExampleModel, turnIdx: number) => comparison.highlights[m.key]?.[turnIdx] ?? [];
-  const visibleTurns = full ? [1, 2, 3, 4] : [1];
 
   return (
     <div>
@@ -501,7 +818,7 @@ function ComparisonView({
         </div>
 
         {/* Turns 2-5: follow-ups are generated per conversation, so each column shows its own */}
-        {visibleTurns.map(i => (
+        {[1, 2, 3, 4].map(i => (
           <div key={i} className="space-y-3">
             <TurnHeader turnIdx={i} pressures={models[0].pressures} />
             <div className="grid grid-cols-2 items-stretch gap-4">
@@ -533,71 +850,38 @@ function ComparisonView({
           ))}
         </div>
         <div className="space-y-4">
-          {[0, ...visibleTurns].map(i => (
+          {[0, 1, 2, 3, 4].map(i => (
             <div key={i} className="space-y-3">
               <TurnHeader turnIdx={i} pressures={models[0].pressures} />
-              <ModelCell model={activeModel} turnIdx={i} showUser highlights={hl(activeModel, i)} />
+              <ModelCell model={activeModel} turnIdx={i} showUser={i > 0} highlights={hl(activeModel, i)} />
             </div>
           ))}
         </div>
       </div>
-
-      {!full && (
-        <div className="mt-8 flex justify-center">
-          <button
-            type="button"
-            onClick={onShowFull}
-            className="cursor-pointer rounded-md border border-edge bg-white px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
-          >
-            View full conversation (all 5 turns)
-          </button>
-        </div>
-      )}
-
     </div>
   );
 }
 
+/* ---------- top-level section ---------- */
+
 export default function ExampleConversation() {
-  const [activeComparison, setActiveComparison] = useState(0);
+  const [active, setActive] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
-  const comparison = exampleComparisons[activeComparison];
+  const comparison = exampleComparisons[active];
 
   return (
     <div>
-      {exampleComparisons.length > 1 && (
-        <div className="mb-8">
-          <div className="flex flex-col items-center gap-2 text-center">
-            <label
-              htmlFor="example-select"
-              className="text-xs font-semibold uppercase tracking-wider text-muted"
-            >
-              Selected examples
-            </label>
-            <select
-              id="example-select"
-              value={activeComparison}
-              onChange={e => setActiveComparison(Number(e.target.value))}
-              className="w-full max-w-md cursor-pointer rounded-lg border border-edge bg-white px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-muted/40 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
-            >
-              {exampleComparisons.map((c, i) => (
-                <option key={c.id} value={i}>
-                  Example {i + 1}: {c.models[0].name} vs {c.models[1].name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      )}
-      {/* key resets tab state when switching comparisons */}
-      <ComparisonView
+      <ScenarioTabs active={active} onSelect={setActive} />
+      {/* key resets per-scenario state when switching */}
+      <ScenarioPanel
         key={comparison.id}
         comparison={comparison}
+        activeIdx={active}
         onShowFull={() => setModalOpen(true)}
       />
       {modalOpen && (
         <ConversationModal onClose={() => setModalOpen(false)}>
-          <ComparisonView key={`${comparison.id}-full`} comparison={comparison} full />
+          <FullConversation key={`${comparison.id}-full`} comparison={comparison} />
         </ConversationModal>
       )}
     </div>

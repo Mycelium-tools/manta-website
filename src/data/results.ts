@@ -27,6 +27,7 @@ export type Model = {
   byPressure: Record<string, number>;
   bySpecies: Record<string, number>;
   meanResponseLength: number;
+  latestRun: string; // month of the run the row's numbers come from
   color: string;
 };
 
@@ -56,6 +57,7 @@ export const models: Model[] = [
     byPressure: { economic: 0.715, social: 0.718, pragmatic: 0.824, epistemic: 0.844, cultural: 0.749 },
     bySpecies: { companion: 0.863, wild: 0.807, farmed: 0.752, invertebrate: 0.645 },
     meanResponseLength: 2705,
+    latestRun: "May 2026",
     color: "#D97757",
   },
   {
@@ -83,6 +85,7 @@ export const models: Model[] = [
     byPressure: { economic: 0.613, social: 0.587, pragmatic: 0.743, epistemic: 0.811, cultural: 0.764 },
     bySpecies: { companion: 0.782, wild: 0.698, farmed: 0.619, invertebrate: 0.629 },
     meanResponseLength: 3863,
+    latestRun: "May 2026",
     color: "#4b5563",
   },
   {
@@ -110,6 +113,7 @@ export const models: Model[] = [
     byPressure: { economic: 0.467, social: 0.432, pragmatic: 0.573, epistemic: 0.673, cultural: 0.604 },
     bySpecies: { companion: 0.650, wild: 0.528, farmed: 0.480, invertebrate: 0.401 },
     meanResponseLength: 3981,
+    latestRun: "May 2026",
     color: "#4b6ef5",
   },
   // July 2026 run: logs/0_1090_gemini_3.5_flash (n = 1,069 scored conversations;
@@ -140,6 +144,7 @@ export const models: Model[] = [
     byPressure: { economic: 0.391, social: 0.357, pragmatic: 0.524, epistemic: 0.641, cultural: 0.493 },
     bySpecies: { companion: 0.601, wild: 0.475, farmed: 0.390, invertebrate: 0.397 },
     meanResponseLength: 3625,
+    latestRun: "July 2026",
     color: "#4285f4",
   },
   {
@@ -167,10 +172,42 @@ export const models: Model[] = [
     byPressure: { economic: 0.370, social: 0.362, pragmatic: 0.495, epistemic: 0.570, cultural: 0.412 },
     bySpecies: { companion: 0.471, wild: 0.449, farmed: 0.420, invertebrate: 0.394 },
     meanResponseLength: 2480,
+    latestRun: "May 2026",
     color: "#0064e0",
   },
+  // July 2026 run: logs/0_1090_gemini_3.1_pro_preview (n = 1,083 scored
+  // conversations; 7 dropped for missing turn scores), judged by Claude Sonnet 4.6.
+  // Added to the main board July 2026 (not part of the paper's Table 4 seven).
   {
     rank: 6,
+    name: "Gemini 3.1 Pro",
+    lab: "Google",
+    labColor: "#4285f4",
+    awms: 0.441,
+    awvsT3: 0.470,
+    awvsT4: 0.397,
+    awvsT5: 0.349,
+    meanAwvs: 0.405,
+    awvsCILow: 0.392,
+    awvsCIHigh: 0.418,
+    ccr: 0.456,
+    slopePerTurn: -0.0605,
+    progressive: 13.7,
+    stable: 40.7,
+    regressive: 45.6,
+    everCapitulated: 85.8,
+    meanToF: 3.49,
+    meanNoF: 1.901,
+    capitulatedAtT3: 61.5,
+    cronbachAlpha: 0.733,
+    byPressure: { economic: 0.358, social: 0.328, pragmatic: 0.472, epistemic: 0.602, cultural: 0.452 },
+    bySpecies: { companion: 0.578, wild: 0.413, farmed: 0.380, invertebrate: 0.326 },
+    meanResponseLength: 3589,
+    latestRun: "July 2026",
+    color: "#4285f4",
+  },
+  {
+    rank: 7,
     name: "Mistral Small",
     lab: "Mistral",
     labColor: "#f05a28",
@@ -194,10 +231,11 @@ export const models: Model[] = [
     byPressure: { economic: 0.344, social: 0.332, pragmatic: 0.461, epistemic: 0.505, cultural: 0.382 },
     bySpecies: { companion: 0.497, wild: 0.403, farmed: 0.372, invertebrate: 0.272 },
     meanResponseLength: 2391,
+    latestRun: "May 2026",
     color: "#f05a28",
   },
   {
-    rank: 7,
+    rank: 8,
     name: "Grok 4.3",
     lab: "xAI",
     labColor: "#0f172a",
@@ -221,11 +259,12 @@ export const models: Model[] = [
     byPressure: { economic: 0.323, social: 0.327, pragmatic: 0.387, epistemic: 0.439, cultural: 0.329 },
     bySpecies: { companion: 0.528, wild: 0.440, farmed: 0.318, invertebrate: 0.198 },
     meanResponseLength: 2384,
+    latestRun: "May 2026",
     color: "#0f172a",
   },
 ];
 
-// Pooled AWVS by pressure type (all 7 models). Cultural pressure is
+// Pooled AWVS by pressure type (the paper's 7 models). Cultural pressure is
 // underpowered (~85 turns per model) and reported as exploratory in the paper.
 export const pressureTypes = [
   { name: "Social", meanAwvs: 0.434, description: "Peer norms & majority pressure" },
@@ -253,56 +292,10 @@ export const rankingComparison = [
   { model: "Mistral Small", awmsRank: 7, awvsRank: 6, shift: 1 },
 ];
 
-// Gemini family sub-leaderboard: three tiers of one provider, run on the same
-// original question set as the main leaderboard. When a run finishes, add its
-// Model data and flip status to "done" (modelName keys into models[] or
-// geminiExtraModels[]).
-export type GeminiFamilyEntry = {
-  name: string;
-  tier: "Lite" | "Flash" | "Pro";
-  status: "done" | "running";
-  modelName?: string;
-};
-
-export const geminiFamily: GeminiFamilyEntry[] = [
-  { name: "Gemini 3.1 Pro", tier: "Pro", status: "done", modelName: "Gemini 3.1 Pro" },
-  { name: "Gemini 3.5 Flash", tier: "Flash", status: "done", modelName: "Gemini 3.5 Flash" },
-  { name: "Gemini 3.1 Flash Lite", tier: "Lite", status: "done", modelName: "Gemini Flash Lite" },
-];
-
-// Completed Gemini-family runs that are not part of the main 7-model board.
+// Completed runs kept for the record but not shown on the main board.
 // Entries generated by scripts/compute_results.py from the raw logs in
 // manta_benchmark/logs (rank = would-be main-board rank, display only).
 export const geminiExtraModels: Model[] = [
-  // July 2026 run: logs/0_1090_gemini_3.1_pro_preview (n = 1,083 scored
-  // conversations; 7 dropped for missing turn scores), judged by Claude Sonnet 4.6.
-  {
-    rank: 5,
-    name: "Gemini 3.1 Pro",
-    lab: "Google",
-    labColor: "#4285f4",
-    awms: 0.441,
-    awvsT3: 0.470,
-    awvsT4: 0.397,
-    awvsT5: 0.349,
-    meanAwvs: 0.405,
-    awvsCILow: 0.392,
-    awvsCIHigh: 0.418,
-    ccr: 0.456,
-    slopePerTurn: -0.0605,
-    progressive: 13.7,
-    stable: 40.7,
-    regressive: 45.6,
-    everCapitulated: 85.8,
-    meanToF: 3.49,
-    meanNoF: 1.901,
-    capitulatedAtT3: 61.5,
-    cronbachAlpha: 0.733,
-    byPressure: { economic: 0.358, social: 0.328, pragmatic: 0.472, epistemic: 0.602, cultural: 0.452 },
-    bySpecies: { companion: 0.578, wild: 0.413, farmed: 0.380, invertebrate: 0.326 },
-    meanResponseLength: 3589,
-    color: "#4285f4",
-  },
   // May 2026 paper run (Table 4). Was the paper's Google entry on the main
   // board until replaced by Gemini 3.5 Flash in July 2026.
   {
@@ -330,6 +323,7 @@ export const geminiExtraModels: Model[] = [
     byPressure: { economic: 0.292, social: 0.282, pragmatic: 0.338, epistemic: 0.347, cultural: 0.323 },
     bySpecies: { companion: 0.423, wild: 0.328, farmed: 0.273, invertebrate: 0.237 },
     meanResponseLength: 3969,
+    latestRun: "May 2026",
     color: "#4285f4",
   },
 ];
