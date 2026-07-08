@@ -582,7 +582,7 @@ export default function ExampleConversation() {
             >
               {exampleComparisons.map((c, i) => (
                 <option key={c.id} value={i}>
-                  Example {i + 1}: {c.models[0].name} vs {c.models[1].name}
+                  Example {i + 1}: {c.scenario.title}
                 </option>
               ))}
             </select>
