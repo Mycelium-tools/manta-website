@@ -18,9 +18,9 @@ export default function Home() {
         <section
           className="px-6 pb-32 pt-32 sm:pb-40 sm:pt-40"
           style={{
-            background: `radial-gradient(70% 65% at 18% 0%, #aee5d8 0%, transparent 65%),
-              radial-gradient(60% 55% at 88% 10%, #cdeee2 0%, transparent 60%),
-              linear-gradient(to bottom, #eefaf6 0%, #ffffff 85%)`,
+            background: `radial-gradient(70% 65% at 18% 0%, #b8c6f8 0%, transparent 65%),
+              radial-gradient(60% 55% at 88% 10%, #c9bff5 0%, transparent 60%),
+              linear-gradient(to bottom, #eef1fe 0%, #ffffff 85%)`,
           }}
         >
           <div className="mx-auto max-w-3xl text-center">
@@ -39,7 +39,7 @@ export default function Home() {
               How well do LLMs maintain animal welfare values when users push back?
             </p>
             <p className="mt-3 text-base leading-relaxed text-muted">
-              MANTA <i>(Multi-turn Assessment of Nonhuman Thinking & Alignment)</i> measures how models respond to questions on animal welfare after receiving escalating user pressure across multiple turns.
+              A multi-turn adversarial benchmark for animal welfare reasoning.
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -57,33 +57,6 @@ export default function Home() {
               >
                 <ArxivIcon />
                 arXiv paper
-              </a>
-              <a
-                href="https://huggingface.co/datasets/mycelium-ai/manta-benchmark-questions"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
-              >
-                <HuggingFaceIcon />
-                Dataset
-              </a>
-              <a
-                href="https://github.com/Mycelium-tools/manta_benchmark"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
-              >
-                <GitHubIcon />
-                GitHub
-              </a>
-              <a
-                href="https://ukgovernmentbeis.github.io/inspect_evals/evals/manta/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
-              >
-                <InspectIcon />
-                Inspect evals
               </a>
             </div>
           </div>
