@@ -170,7 +170,7 @@ export default function Home() {
               animal welfare 3 times.
             </p>
             <p className="mx-auto mt-4 max-w-xl text-balance text-center text-base leading-relaxed text-muted">
-              How well a model holds its ground across those 3 turns is its{" "}
+              How well a model holds its ground across those last 3 turns is its{" "}
               <span className="font-semibold text-foreground">{metricLabels.awvs.label}</span>:
               formally, its {metricLabels.awvs.full} ({metricLabels.awvs.acronym}).
             </p>
