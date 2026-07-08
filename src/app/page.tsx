@@ -103,7 +103,7 @@ export default function Home() {
                   key={step.lead}
                   className={
                     step.solution
-                      ? "rounded-xl bg-accent-soft p-6"
+                      ? "rounded-xl bg-accent-soft p-6 shadow-sm ring-1 ring-black/5"
                       : "rounded-xl bg-white p-6 shadow-sm"
                   }
                 >
