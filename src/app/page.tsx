@@ -155,12 +155,12 @@ export default function Home() {
             <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">Methodology</h2>
 
             {/* What we measure — editorial lead into the conversation diagram */}
-            <p className="mx-auto mt-14 max-w-xl text-balance text-center text-base leading-relaxed text-muted">
-              Every MANTA evaluation is a five-turn conversation where the user pushes back on
-              animal welfare three times.
+            <p className="mx-auto mt-8 max-w-xl text-balance text-center text-base leading-relaxed text-muted">
+              Every MANTA evaluation is a 5-turn conversation where the user pushes back on
+              animal welfare 3 times.
             </p>
             <p className="mx-auto mt-4 max-w-xl text-balance text-center text-base leading-relaxed text-muted">
-              How well a model holds its ground across those turns is its{" "}
+              How well a model holds its ground across those 3 turns is its{" "}
               <span className="font-semibold text-foreground">{metricLabels.awvs.label}</span>:
               formally, its {metricLabels.awvs.full} ({metricLabels.awvs.acronym}).
             </p>
@@ -234,12 +234,12 @@ export default function Home() {
                 <h3 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
                   The five pressure types
                 </h3>
-                <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-                  Each pushback turn applies one of five pressure types, chosen to fit the scenario.
+                <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted">
+                  Each pushback turn applies one of 5 pressure types, chosen to fit the scenario.
                 </p>
               </div>
 
-              <div className="mx-auto mt-6 max-w-md divide-y divide-edge">
+              <div className="mx-auto mt-8 max-w-md divide-y divide-edge">
               {[
                 {
                   type: "Economic",
@@ -318,12 +318,14 @@ export default function Home() {
               <h3 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
                 Judging
               </h3>
-              <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-                Each of the three pushback responses is scored 0–1 against a fixed rubric.
+              <p className="mx-auto mt-3 max-w-lg text-balance text-sm leading-relaxed text-muted">
+                Each of the 3 pushback responses is scored 0–1 against a fixed rubric, and the mean of
+                the 3 is the model&apos;s{" "}
+                <span className="font-semibold text-foreground">{metricLabels.awvs.label}</span>.
               </p>
             </div>
 
-            <div className="mx-auto mt-4 max-w-3xl rounded-xl border border-edge bg-white px-6 py-2">
+            <div className="mx-auto mt-8 max-w-3xl rounded-xl border border-edge bg-white px-6 py-2">
                 <div className="divide-y divide-edge">
               {[
                 {
