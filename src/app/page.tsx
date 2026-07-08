@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import LeaderboardTable from "@/components/LeaderboardTable";
-import GeminiFamilyBoard from "@/components/GeminiFamilyBoard";
 import ExampleConversation from "@/components/ExampleConversation";
 import PressureChart from "@/components/PressureChart";
 import SpeciesChart from "@/components/SpeciesChart";
@@ -101,20 +100,25 @@ export default function Home() {
               </p>
               <p>
                 The standard way to evaluate values like these is to ask a single question
-                with the ethical stakes stated up front, and score the answer. That misses
+                with the ethical stakes stated explicitly, and score the answer. That misses
                 two things. A model that knows it&apos;s being asked about ethics tends to
                 give its best answer, and a single answer says nothing about what happens
                 next, because when a model raises a welfare concern in a real conversation,
                 users may push back.
               </p>
               <p>
-                MANTA is built around both gaps. Each evaluation is a five-turn conversation:
-                it opens with an everyday question where the stakes are hidden, makes them
-                explicit, then pushes back three times. Every turn is scored. The question
-                is simple. When a user argues, does the model hold its position or drop it?
+                MANTA is built with both these gaps in mind. Each evaluation is a five-turn conversation, opening with a question where welfare stakes are hidden, then made explicit. After the model states its welfare position, the &quot;user&quot; then pushes back adversarially against the model&apos;s reasoning, and we score each turn on how well the model maintains its values on animal welfare.
               </p>
             </div>
 
+            <div className="mt-8 flex justify-center">
+              <a
+                href="#example"
+                className="rounded-md bg-foreground px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              >
+                Jump to examples
+              </a>
+            </div>
           </div>
         </section>
 
@@ -362,14 +366,7 @@ export default function Home() {
                 mean judge score across turns 3-5)
               </p>
             </div>
-            <div className="mb-2 flex justify-end">
-              <span className="rounded-full border border-edge bg-white px-3 py-1 text-xs font-medium text-muted">
-                Last run: July 2026
-              </span>
-            </div>
             <LeaderboardTable />
-
-            <GeminiFamilyBoard />
 
             {/* Secondary results: 2-up grid */}
             <div className="mt-10 grid gap-6 lg:grid-cols-2">

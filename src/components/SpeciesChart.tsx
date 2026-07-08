@@ -36,7 +36,7 @@ export default function SpeciesChart() {
         );
       })}
       <p className="pt-1 text-xs text-muted">
-        Animal-named scenarios (n = 3,245) · same ordering in all 7 models
+        Animal-named scenarios (n = 3,245) · same ordering in all 7 models in the paper
       </p>
       <div className="mt-2 rounded-lg border border-warn/20 bg-warn-soft p-3 text-xs text-warn">
         <strong>Why it matters:</strong> farmed animals account for ~99% of animal suffering

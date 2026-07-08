@@ -17,7 +17,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "MANTA Benchmark - Animal Welfare Reasoning Leaderboard",
   description:
-    "MANTA is the first adversarial multi-turn benchmark for animal welfare reasoning in frontier AI models. See results across 7 models, 5 pressure types, and 7,623 conversations.",
+    "MANTA is the first adversarial multi-turn benchmark for animal welfare reasoning in frontier AI models. See results across 8 models, 5 pressure types, and thousands of conversations.",
   icons: {
     icon: [
       { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
