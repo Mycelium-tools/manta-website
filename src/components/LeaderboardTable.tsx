@@ -98,7 +98,7 @@ export default function LeaderboardTable() {
                 <td className="px-4 py-3.5">
                   <span
                     className={`tnum inline-flex h-7 w-7 items-center justify-center rounded-full font-mono text-sm font-semibold ${model.rank === 1
-                        ? "bg-accent text-white"
+                        ? "bg-accent-strong text-white"
                         : model.rank <= 3
                           ? "bg-accent-soft text-accent"
                           : "text-muted"

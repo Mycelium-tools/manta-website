@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import LeaderboardTable from "@/components/LeaderboardTable";
@@ -16,7 +17,7 @@ export default function Home() {
       <main>
         {/* ── Hero ─────────────────────────────────────────────────────── */}
         <section
-          className="px-6 pb-32 pt-32 sm:pb-40 sm:pt-40"
+          className="px-6 pb-20 pt-32 sm:pb-24 sm:pt-40"
           style={{
             background: `radial-gradient(70% 65% at 18% 0%, #b8c6f8 0%, transparent 65%),
               radial-gradient(60% 55% at 88% 10%, #c9bff5 0%, transparent 60%),
@@ -27,25 +28,27 @@ export default function Home() {
             <Image
               src="/manta-ray-logo.png"
               alt="MANTA logo - a manta ray"
-              width={112}
-              height={112}
+              width={128}
+              height={128}
               priority
               className="mx-auto"
             />
-            <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+            <p className="mt-3 text-xs font-semibold uppercase tracking-[0.25em] text-accent sm:text-sm">
               MANTA
-            </h1>
-            <p className="mt-5 text-lg font-semibold leading-snug tracking-tight text-foreground sm:text-xl">
-              How well do LLMs maintain animal welfare values when users push back?
             </p>
-            <p className="mt-3 text-base leading-relaxed text-muted">
+            <h1 className="mx-auto mt-5 max-w-2xl text-balance text-3xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+              How well do LLMs maintain{" "}
+              <span className="text-accent">animal welfare</span> values when users{" "}
+              <span className="text-accent">push back</span>?
+            </h1>
+            <p className="mt-6 text-base leading-relaxed text-muted sm:text-lg">
               A multi-turn adversarial benchmark for animal welfare reasoning.
             </p>
 
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <div className="mt-10 flex flex-wrap justify-center gap-3">
               <a
                 href="#results"
-                className="rounded-md bg-foreground px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                className="rounded-md bg-accent-strong px-6 py-3 text-[15px] font-semibold text-white transition-opacity hover:opacity-90"
               >
                 See the results
               </a>
@@ -53,7 +56,7 @@ export default function Home() {
                 href="https://arxiv.org/abs/2605.16301v2"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
+                className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-6 py-3 text-[15px] font-semibold text-foreground transition-colors hover:bg-surface"
               >
                 <ArxivIcon />
                 arXiv paper
@@ -64,30 +67,85 @@ export default function Home() {
 
         {/* ── Introduction ─────────────────────────────────────────────── */}
         <section id="introduction" className="scroll-mt-16 bg-surface px-6 py-20">
-          <div className="mx-auto max-w-3xl">
+          <div className="mx-auto max-w-5xl">
             <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">Introduction</h2>
-            <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-muted">
-              <p>
-                People increasingly ask language models for advice that implicitly affects
-                animals: what to source for a restaurant, how to run a farm, what to serve
-                at an event. The welfare stakes are real, but unnamed.
-              </p>
-              <p>
-                The standard way to evaluate values like these is to ask a single question
-                with the ethical stakes stated up front, and score the answer. That misses
-                two things. A model that knows it&apos;s being asked about ethics tends to
-                give its best answer, and a single answer says nothing about what happens
-                next, because when a model raises a welfare concern in a real conversation,
-                users may push back.
-              </p>
-              <p>
-                MANTA is built around both gaps. Each evaluation is a five-turn conversation:
-                it opens with an everyday question where the stakes are hidden, makes them
-                explicit, then pushes back three times. Every turn is scored. The question
-                is simple. When a user argues, does the model hold its position or drop it?
-              </p>
-            </div>
 
+            {/* Narrative: problem → gap → solution */}
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {([
+                {
+                  icon: (
+                    <>
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </>
+                  ),
+                  lead: "The stakes are hidden.",
+                  body: "People increasingly ask language models for advice that implicitly affects animals — what to source for a restaurant, how to run a farm, what to serve at an event. The welfare stakes are real, but unnamed.",
+                },
+                {
+                  icon: (
+                    <>
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </>
+                  ),
+                  lead: "One answer isn't the test.",
+                  body: "Standard evaluations ask one question with the ethics stated up front. But a model that knows it's being tested gives its best answer — and says nothing about what happens when the user pushes back.",
+                },
+                {
+                  lead: "MANTA tests both gaps.",
+                  body: "Short for Multi-turn Assessment of Nonhuman Thinking & Alignment. Each evaluation is a five-turn conversation that hides the stakes, makes them explicit, then pushes back three times — scoring every turn.",
+                  solution: true,
+                },
+              ] as { icon?: ReactNode; lead: string; body: string; solution?: boolean }[]).map(step => (
+                <div
+                  key={step.lead}
+                  className={
+                    step.solution
+                      ? "rounded-xl bg-accent-soft p-6"
+                      : "rounded-xl bg-white p-6 shadow-sm"
+                  }
+                >
+                  {step.solution ? (
+                    <Image
+                      src="/manta-ray-logo.png"
+                      alt=""
+                      width={28}
+                      height={28}
+                      className="mb-3 h-7 w-7 rounded-full"
+                    />
+                  ) : (
+                    <svg
+                      viewBox="0 0 24 24"
+                      width={28}
+                      height={28}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.75}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                      className="mb-3 text-accent"
+                    >
+                      {step.icon}
+                    </svg>
+                  )}
+                  <h3
+                    className={
+                      step.solution
+                        ? "text-base font-semibold text-accent"
+                        : "text-base font-semibold text-foreground"
+                    }
+                  >
+                    {step.lead}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    {step.body}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
