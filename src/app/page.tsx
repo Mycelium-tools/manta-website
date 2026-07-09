@@ -434,18 +434,18 @@ export default function Home() {
         </section>
 
         {/* ── Example Conversation ─────────────────────────────────────── */}
-        <section id="example" className="scroll-mt-16 px-6 py-14">
-          <div className="mx-auto max-w-6xl">
-            <div className="mb-8 text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Model comparison
-              </h2>
-              <p className="mx-auto mt-1 max-w-3xl text-sm text-muted">
-                The same scenario and pressure plan, run against two models, with verbatim
-                transcripts and per-turn judge scores.
-              </p>
+        <section id="example" className="scroll-mt-16 px-6 py-16">
+          <div className="mx-auto max-w-5xl">
+            <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
+              Model comparison
+            </h2>
+            <p className="mx-auto mt-8 max-w-xl text-balance text-center text-base leading-relaxed text-muted">
+              The same scenario and pressure plan, run against two models, with verbatim
+              transcripts and turn-by-turn scores.
+            </p>
+            <div className="mt-10">
+              <ExampleConversation />
             </div>
-            <ExampleConversation />
           </div>
         </section>
 
@@ -454,35 +454,35 @@ export default function Home() {
           <div className="mx-auto max-w-3xl">
             <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">Discussion</h2>
 
-            <h3 className="mt-8 text-lg font-semibold tracking-tight">
+            <h3 className="mt-14 text-lg font-semibold tracking-tight text-foreground sm:text-xl">
               Future model performance
             </h3>
-            <p className="mt-2 text-[15px] leading-relaxed text-muted">
+            <p className="mt-4 text-sm leading-relaxed text-muted">
               No current model is close to ceiling: the strongest model still abandons its
               welfare position in 29% of conversations, and every model declines measurably
               across pressure turns.
             </p>
-            <p className="mt-3 text-[15px] leading-relaxed text-muted">
+            <p className="mt-3 text-sm leading-relaxed text-muted">
               High scores on MANTA would demonstrate that a model&apos;s stated values survive
               sustained user pressure in animal welfare domains. While this is a meaningful alignment
               property, this alone would not establish that a model genuinely
               weighs nonhuman welfare interests, or that its values hold in agentic settings where it
               acts rather than advises.
             </p>
-            <p className="mt-3 text-[15px] leading-relaxed text-muted">
+            <p className="mt-3 text-sm leading-relaxed text-muted">
               MANTA tests the extent to which a model&apos;s moral reasoning for nonhuman
               beings holds up in conversation. This is one useful metric among many,
               but does not represent the complete picture for value alignment.
             </p>
 
-            <h3 className="mt-8 text-lg font-semibold tracking-tight">Impact</h3>
-            <p className="mt-2 text-[15px] leading-relaxed text-muted">
+            <h3 className="mt-12 text-lg font-semibold tracking-tight text-foreground sm:text-xl">Impact</h3>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
               As language models advise the consumers, farmers, restaurateurs, and
               policymakers whose everyday decisions determine animal welfare outcomes at
               scale, assessing how a model reasons about welfare under
               adversarial pressure becomes increasingly important.
             </p>
-            <p className="mt-3 text-[15px] leading-relaxed text-muted">
+            <p className="mt-3 text-sm leading-relaxed text-muted">
               MANTA gives researchers and
               model developers a common reference point for this behavior: a stable,
               reproducible measure of how well values hold up under pressure, and a
@@ -491,10 +491,10 @@ export default function Home() {
               welfare in realistic conversations.
             </p>
 
-            <h3 id="limitations" className="mt-8 scroll-mt-16 text-lg font-semibold tracking-tight">
+            <h3 id="limitations" className="mt-12 scroll-mt-16 text-lg font-semibold tracking-tight text-foreground sm:text-xl">
               Limitations
             </h3>
-            <p className="mt-2 text-sm text-muted">
+            <p className="mt-4 text-sm text-muted">
               Some limitations of MANTA - full discussion in the{" "}
               <a
                 href="https://arxiv.org/abs/2605.16301v2"
@@ -507,7 +507,7 @@ export default function Home() {
               .
             </p>
 
-            <div className="mt-4 rounded-xl border border-edge bg-white p-6">
+            <div className="mt-4 rounded-xl bg-white p-6 shadow-sm">
               <div className="divide-y divide-edge">
                 {[
                   {
