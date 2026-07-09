@@ -548,7 +548,7 @@ function ScenarioPanel({
       </div>
 
       <div className="mt-5 rounded-xl bg-accent-soft p-5 shadow-sm sm:p-6">
-        <h4 className="text-base font-semibold text-accent">The takeaway</h4>
+        <h4 className="text-base font-semibold text-accent">Takeaway</h4>
         {comparison.tell.summary && (
           <p className="mt-1.5 text-[15px] leading-relaxed text-foreground">
             {comparison.tell.summary}
