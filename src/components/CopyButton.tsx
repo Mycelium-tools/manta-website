@@ -40,7 +40,7 @@ export default function CopyButton({
         type="button"
         onClick={handleCopy}
         aria-label="Copy citation"
-        className="inline-flex items-center justify-center rounded-md bg-accent-soft p-1.5 text-accent shadow-sm ring-1 ring-black/5 transition hover:bg-accent hover:text-white"
+        className="inline-flex items-center justify-center rounded-md bg-accent-strong p-1.5 text-white shadow-sm ring-1 ring-black/5 transition-colors hover:bg-accent"
       >
         <svg
           viewBox="0 0 24 24"

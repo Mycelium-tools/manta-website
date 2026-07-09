@@ -322,19 +322,19 @@ function ExcerptText({ turn }: { turn: ExampleTurn }) {
 }
 
 function TurnHeader({ turnIdx, pressures }: { turnIdx: number; pressures: string[] }) {
-  const { title, tag } = turnLabel(turnIdx, pressures);
+  const { title } = turnLabel(turnIdx, pressures);
   const isPressure = turnIdx >= 2;
   if (isPressure) {
     return (
       <div className="flex items-center justify-center gap-2">
-        <span className="flex items-center gap-1.5 rounded-full bg-warn-soft px-3 py-1 text-xs font-semibold text-warn">
+        <span className="flex items-center gap-1.5 rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent">
           {title}
           <HelpPopover
             question={`What does ${pressures[turnIdx - 2]} pressure mean?`}
             href="#pressure-types"
             linkText="Jump to the definitions"
             iconSize={12}
-            iconClassName="text-warn opacity-70 transition-opacity hover:opacity-100"
+            iconClassName="text-accent opacity-70 transition-opacity hover:opacity-100"
           />
         </span>
       </div>
@@ -345,7 +345,6 @@ function TurnHeader({ turnIdx, pressures }: { turnIdx: number; pressures: string
       <span className="rounded-full bg-surface px-3 py-1 text-xs font-semibold text-muted">
         {title}
       </span>
-      {tag && <span className="text-xs text-muted">{tag}</span>}
     </div>
   );
 }
@@ -448,8 +447,8 @@ function ExcerptCell({
       style={{ backgroundColor: tint.bg }}
     >
       {showUser && (
-        <div className="mb-3 rounded-r-lg border-l-4 border-slate-400 bg-slate-100 px-3 py-2">
-          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+        <div className="mb-3 rounded-r-lg border-l-4 border-edge bg-surface px-3 py-2">
+          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
             <UserIcon size={14} />
             User
           </div>
@@ -482,7 +481,7 @@ function ExcerptCell({
         )}
       </div>
       {turnIdx >= 1 && (
-        <div className="mb-2.5 h-1.5 overflow-hidden rounded-full bg-slate-200/70">
+        <div className="mb-2.5 h-1.5 overflow-hidden rounded-full bg-black/5">
           <div
             className="h-full rounded-full"
             style={{ width: pct(turn.score), backgroundColor: color }}
@@ -502,8 +501,8 @@ function ExcerptTurns({ comparison }: { comparison: ExampleComparison }) {
         <div key={i} className="space-y-3">
           <TurnHeader turnIdx={i} pressures={models[0].pressures} />
           {i === 0 && (
-            <div className="mx-auto max-w-2xl rounded-r-xl border-l-4 border-slate-400 bg-slate-100 px-4 py-3">
-              <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+            <div className="mx-auto max-w-2xl rounded-xl bg-surface px-4 py-3 shadow-sm">
+              <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
                 <UserIcon size={14} />
                 User
               </div>
@@ -613,11 +612,11 @@ function ScenarioPanel({
         </p>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-14">
         <ExcerptTurns comparison={comparison} />
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-edge pt-5">
+      <div className="mt-6 flex flex-col items-center gap-3 border-edge pt-6 text-center">
         <p className="max-w-xl text-xs leading-relaxed text-muted">
           Excerpts are verbatim fragments of each model&apos;s response; [bracketed] words are
           editorial.
@@ -625,7 +624,7 @@ function ScenarioPanel({
         <button
           type="button"
           onClick={onShowFull}
-          className="cursor-pointer rounded-md bg-foreground px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          className="cursor-pointer rounded-md bg-accent-strong px-6 py-3 mt-2 text-[15px] font-semibold text-white transition-opacity hover:opacity-90"
         >
           View full conversation (all 5 turns) &rarr;
         </button>
@@ -683,8 +682,8 @@ function ModelCell({
       style={{ backgroundColor: tint.bg }}
     >
       {showUser && (
-        <div className="mb-3 rounded-r-lg border-l-4 border-slate-400 bg-slate-100 px-3 py-2">
-          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+        <div className="mb-3 rounded-r-lg border-l-4 border-edge bg-surface px-3 py-2">
+          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
             <UserIcon />
             User
           </div>
@@ -711,7 +710,7 @@ function ModelColumnHeader({ model }: { model: ExampleModel }) {
       <span className="font-semibold text-foreground">{model.name}</span>
       <span className="ml-auto text-right">
         <span className="flex items-center justify-end gap-1.5">
-          <span className="tnum font-mono text-sm font-semibold" style={{ color: model.color }}>
+          <span className="tnum font-mono text-sm font-semibold" style={{ color: scoreColor(overall) }}>
             {(overall * 100).toFixed(0)}%
           </span>
           <RubricLink />
@@ -816,8 +815,8 @@ function FullConversation({ comparison }: { comparison: ExampleComparison }) {
         {/* Turn 1: identical opening query, shown once */}
         <div className="space-y-3">
           <TurnHeader turnIdx={0} pressures={models[0].pressures} />
-          <div className="mx-auto max-w-2xl rounded-r-xl border-l-4 border-slate-400 bg-slate-100 px-4 py-3">
-            <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+          <div className="mx-auto max-w-2xl rounded-xl bg-surface px-4 py-3 shadow-sm">
+            <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
               <UserIcon />
               User
             </div>
