@@ -27,7 +27,7 @@ export default function Home() {
       <main>
         {/* ── Hero ─────────────────────────────────────────────────────── */}
         <section
-          className="px-6 pb-20 pt-32 sm:pb-24 sm:pt-40"
+          className="px-6 pb-20 pt-20 sm:pb-24 sm:pt-24"
           style={{
             background: `radial-gradient(70% 65% at 18% 0%, #b8c6f8 0%, transparent 65%),
               radial-gradient(60% 55% at 88% 10%, #c9bff5 0%, transparent 60%),
@@ -43,10 +43,10 @@ export default function Home() {
               priority
               className="mx-auto"
             />
-            <p className="mt-3 text-xs font-semibold uppercase tracking-[0.25em] text-accent sm:text-sm">
+            <p className="mt-3 text-sm font-semibold uppercase tracking-[0.25em] text-accent sm:text-base">
               MANTA
             </p>
-            <h1 className="mx-auto mt-5 max-w-2xl text-balance text-3xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+            <h1 className="mx-auto mt-5 max-w-3xl text-balance text-3xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-4xl lg:text-5xl">
               How well do LLMs maintain{" "}
               <span className="text-accent">animal welfare</span> values when users{" "}
               <span className="text-accent">push back</span>?
@@ -58,7 +58,7 @@ export default function Home() {
             <div className="mt-10 flex flex-wrap justify-center gap-3">
               <a
                 href="#results"
-                className="rounded-md bg-accent-strong px-6 py-3 text-[15px] font-semibold text-white transition-opacity hover:opacity-90"
+                className="rounded-md bg-accent-strong px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
               >
                 See the results
               </a>
@@ -66,10 +66,37 @@ export default function Home() {
                 href="https://arxiv.org/abs/2605.16301v2"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-6 py-3 text-[15px] font-semibold text-foreground transition-colors hover:bg-surface"
+                className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
               >
                 <ArxivIcon />
                 arXiv paper
+              </a>
+              <a
+                href="https://huggingface.co/datasets/mycelium-ai/manta-benchmark-questions"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
+              >
+                <HuggingFaceIcon />
+                Dataset
+              </a>
+              <a
+                href="https://github.com/Mycelium-tools/manta_benchmark"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
+              >
+                <GitHubIcon />
+                GitHub
+              </a>
+              <a
+                href="https://ukgovernmentbeis.github.io/inspect_evals/evals/manta/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
+              >
+                <InspectIcon />
+                Inspect evals
               </a>
             </div>
           </div>
@@ -78,7 +105,7 @@ export default function Home() {
         {/* ── Introduction ─────────────────────────────────────────────── */}
         <section id="introduction" className="scroll-mt-16 bg-surface px-6 py-20">
           <div className="mx-auto max-w-5xl">
-            <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">Motivation</h2>
+            <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">Introduction</h2>
 
             {/* Narrative: problem → gap → solution */}
             <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -90,7 +117,7 @@ export default function Home() {
                       <line x1="1" y1="1" x2="23" y2="23" />
                     </>
                   ),
-                  lead: "The stakes are hidden.",
+                  lead: "The stakes are hidden",
                   body: "People increasingly ask language models for advice that implicitly affects animals, e.g. what to source for a restaurant, or how to run a farm. The welfare stakes are there, but nobody names them.",
                 },
                 {
@@ -100,11 +127,11 @@ export default function Home() {
                       <line x1="1" y1="1" x2="23" y2="23" />
                     </>
                   ),
-                  lead: "One turn isn't enough.",
+                  lead: "One turn isn't enough",
                   body: "Standard evaluations ask one question with the ethics stated up front. But a model that knows it's being tested gives its best answer, and it tells you nothing about what happens when the user pushes back.",
                 },
                 {
-                  lead: "MANTA tests in both gaps.",
+                  lead: "MANTA tests in both gaps",
                   body: "MANTA (Multi-turn Assessment of Nonhuman Thinking & Alignment) measures how well a model holds its animal welfare stance when a user pushes back.",
                   solution: true,
                 },
@@ -121,9 +148,9 @@ export default function Home() {
                     <Image
                       src="/manta-ray-logo.png"
                       alt=""
-                      width={28}
-                      height={28}
-                      className="mb-3 h-7 w-7 rounded-full"
+                      width={36}
+                      height={36}
+                      className="-ml-1 -mt-1 mb-2 h-9 w-9 rounded-full"
                     />
                   ) : (
                     <svg
@@ -169,10 +196,9 @@ export default function Home() {
               Every MANTA evaluation is a 5-turn conversation where the user pushes back on
               animal welfare 3 times.
             </p>
-            <p className="mx-auto mt-4 max-w-xl text-balance text-center text-base leading-relaxed text-muted">
+            <p className="mx-auto mt-4 max-w-3xl text-center text-base leading-relaxed text-muted">
               How well a model holds its ground across those last 3 turns is its{" "}
-              <span className="font-semibold text-foreground">{metricLabels.awvs.label}</span>:
-              formally, its {metricLabels.awvs.full} ({metricLabels.awvs.acronym}).
+              <span className="font-semibold text-foreground">{metricLabels.awvs.label}</span>.
             </p>
 
             {/* The five-turn conversation */}
@@ -512,11 +538,11 @@ export default function Home() {
                 {[
                   {
                     title: "User follow-up wording varies per model",
-                    desc: "The pressure plan - which pressure types, in what order - is frozen and identical across models, but the user's follow-up wording is generated dynamically in response to each model's answers, so surface phrasing differs slightly between models. Ablations to bound this comparability cost are planned but not yet run.",
+                    desc: "The pressure types used are identical across models, but the user's follow-up wording is generated dynamically in response to each model's answers, so surface phrasing differs slightly between models. Ablations to bound this comparability cost are planned but not yet run.",
                   },
                   {
                     title: "One judge per conversation",
-                    desc: "Claude Sonnet 4.6 judges six models; GPT-5.4 judges Claude Opus 4.7 to avoid same-family bias. Judge-harshness differences between the two judges can't be fully ruled out. Ideal setup would use a PoLL (panel of LLM judges).",
+                    desc: "Claude Sonnet 4.6 judges six models; GPT-5.4 judges Claude Opus 4.7 to avoid self-preference bias. Judge-harshness differences between the two judges can't be fully ruled out. Ideal setup would use a PoLL (panel of LLM judges).",
                   },
                 ].map(item => (
                   <div key={item.title} className="flex flex-col gap-1 py-3 sm:flex-row sm:gap-6">

@@ -7,10 +7,11 @@ import type { ExampleModel } from "@/data/exampleConversation";
 // recognition rubric and is not charted.
 const TURN_IDX = [1, 2, 3, 4];
 
-// Geometry only — all text is rendered as HTML (page font) around the SVG.
+// Tooltip and x-axis text are HTML (page font); y-axis labels live in the
+// SVG so they stay glued to their gridlines at every width.
 const W = 560;
 const H = 150;
-const L = 6;
+const L = 46;
 const R = 6;
 const T = 10;
 const B = 10;
@@ -40,8 +41,30 @@ export default function TrajectoryChart({ models }: { models: ExampleModel[] }) 
           className="block h-auto w-full"
           onMouseLeave={() => setHover(null)}
         >
-          {/* baseline at 0% */}
-          <line x1={L} y1={y(0)} x2={W - R} y2={y(0)} stroke="var(--border)" strokeWidth={1} />
+          {/* y-axis: gridlines + labels at 0 / 50 / 100% */}
+          {[0, 0.5, 1].map(v => (
+            <g key={v}>
+              <line
+                x1={L}
+                y1={y(v)}
+                x2={W - R}
+                y2={y(v)}
+                stroke="var(--border)"
+                strokeWidth={1}
+                strokeDasharray={v === 0 ? undefined : "2 4"}
+              />
+              <text
+                x={L - 8}
+                y={y(v) + 3.5}
+                textAnchor="end"
+                fontSize={10}
+                fill="var(--muted)"
+                className="tnum font-mono"
+              >
+                {v * 100}%
+              </text>
+            </g>
+          ))}
 
           {/* hover guide */}
           {hover !== null && (
@@ -128,10 +151,16 @@ export default function TrajectoryChart({ models }: { models: ExampleModel[] }) 
         )}
       </div>
 
-      {/* x-axis (HTML, page font) */}
-      <div className="mt-2 flex justify-between text-xs text-muted">
-        {TURN_IDX.map(t => (
-          <span key={t}>Turn {t + 1}</span>
+      {/* x-axis (HTML, page font), labels centered under their data points */}
+      <div className="relative mt-2 h-4 text-xs text-muted">
+        {TURN_IDX.map((t, i) => (
+          <span
+            key={t}
+            className="absolute -translate-x-1/2 whitespace-nowrap"
+            style={{ left: `${(x(i) / W) * 100}%` }}
+          >
+            Turn {t + 1}
+          </span>
         ))}
       </div>
     </div>
