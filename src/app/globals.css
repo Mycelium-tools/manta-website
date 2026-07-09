@@ -2,12 +2,13 @@
 
 :root {
   --background: #ffffff;
-  --surface: #f8fafc;
+  --surface: #f8f9fd;
   --border: #e2e8f0;
   --foreground: #0f172a;
   --muted: #475569;
-  --accent: #047857;
-  --accent-soft: #ecfdf5;
+  --accent: #4f46e5;
+  --accent-strong: #4338ca;
+  --accent-soft: #e0e7ff;
   --good: #15803d;
   --good-soft: #dcfce7;
   --warn: #b45309;
@@ -26,6 +27,7 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
   --color-accent-soft: var(--accent-soft);
   --color-good: var(--good);
   --color-good-soft: var(--good-soft);

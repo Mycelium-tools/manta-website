@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import LabLogo from "@/components/LabLogos";
 import TrajectoryChart from "@/components/TrajectoryChart";
-import { scoreColor } from "@/data/results";
+import { scoreColor, scoreBg } from "@/data/results";
 import {
   exampleComparisons,
   type ExampleComparison,
@@ -79,11 +79,18 @@ function turnLabel(i: number, pressures: string[]): { title: string; tag?: strin
   return { title: `Turn ${i + 1} · ${cap(pressures[i - 2])} pressure` };
 }
 
-function scoreLabel(score: number) {
-  if (score >= 0.65) return { label: "Maintained", color: "var(--good)", bg: "var(--good-soft)" };
-  if (score >= 0.45) return { label: "Softening", color: "#6d28d9", bg: "#ede9fe" };
-  return { label: "Capitulated", color: "var(--bad)", bg: "var(--bad-soft)" };
+/** Map a judge score to its Methodology rubric band label (see #judge-rubric).
+ * Bands are anchored at 100 / 80-90 / 60-70 / 40-50 / 10-30 / 0; thresholds sit
+ * at the midpoints between adjacent band centres. */
+function rubricLabel(score: number): string {
+  if (score >= 0.925) return "Fully maintains";
+  if (score >= 0.75) return "Strong";
+  if (score >= 0.55) return "Adequate";
+  if (score >= 0.325) return "Weak";
+  if (score >= 0.1) return "Very weak";
+  return "Full capitulation";
 }
+
 
 /** Wrap annotated welfare-relevant passages in colored bold; everything else stays plain. */
 function applyHighlights(line: string, highlights: Highlight[]): ReactNode {
@@ -315,19 +322,19 @@ function ExcerptText({ turn }: { turn: ExampleTurn }) {
 }
 
 function TurnHeader({ turnIdx, pressures }: { turnIdx: number; pressures: string[] }) {
-  const { title, tag } = turnLabel(turnIdx, pressures);
+  const { title } = turnLabel(turnIdx, pressures);
   const isPressure = turnIdx >= 2;
   if (isPressure) {
     return (
       <div className="flex items-center justify-center gap-2">
-        <span className="flex items-center gap-1.5 rounded-full bg-warn-soft px-3 py-1 text-xs font-semibold text-warn">
+        <span className="flex items-center gap-1.5 rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent">
           {title}
           <HelpPopover
             question={`What does ${pressures[turnIdx - 2]} pressure mean?`}
             href="#pressure-types"
             linkText="Jump to the definitions"
             iconSize={12}
-            iconClassName="text-warn opacity-70 transition-opacity hover:opacity-100"
+            iconClassName="text-accent opacity-70 transition-opacity hover:opacity-100"
           />
         </span>
       </div>
@@ -338,7 +345,6 @@ function TurnHeader({ turnIdx, pressures }: { turnIdx: number; pressures: string
       <span className="rounded-full bg-surface px-3 py-1 text-xs font-semibold text-muted">
         {title}
       </span>
-      {tag && <span className="text-xs text-muted">{tag}</span>}
     </div>
   );
 }
@@ -373,7 +379,7 @@ function ScenarioTabs({
       role="tablist"
       aria-label="Example scenarios"
       onKeyDown={onKeyDown}
-      className="grid grid-cols-1 overflow-hidden rounded-xl border border-edge bg-surface sm:grid-cols-2 lg:grid-cols-4"
+      className="grid grid-cols-2 gap-3 lg:grid-cols-4"
     >
       {exampleComparisons.map((c, i) => {
         const selected = i === active;
@@ -387,28 +393,26 @@ function ScenarioTabs({
             aria-controls="scenario-panel"
             tabIndex={selected ? 0 : -1}
             onClick={() => onSelect(i)}
-            className={`flex cursor-pointer flex-col gap-2 border-b-[3px] border-edge/60 px-4 py-3.5 text-left transition-colors last:border-r-0 sm:border-r ${
+            className={`relative cursor-pointer overflow-hidden rounded-xl px-4 py-3 text-left transition ${
               selected
-                ? "border-b-accent bg-white"
-                : "border-b-transparent hover:bg-white/60"
+                ? "bg-accent-soft shadow-md"
+                : "bg-surface shadow-sm hover:bg-white hover:shadow"
             }`}
           >
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-muted">
-              Scenario {i + 1}
-            </span>
-            <span className="text-sm font-semibold leading-snug text-foreground">
+            {selected && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-accent" />}
+            <span className="block text-sm font-semibold leading-snug text-foreground">
               {c.scenario.title}
             </span>
-            <span className="flex flex-wrap gap-1.5">
+            <span className="mt-2 flex items-center gap-3">
               {c.models.map(m => {
                 const overall = overallScore(m);
                 return (
                   <span
                     key={m.key}
-                    className="tnum inline-flex items-center gap-1.5 rounded-full border border-edge bg-white px-2 py-0.5 font-mono text-[11px]"
+                    className="tnum inline-flex items-center gap-1.5 font-mono text-[11px]"
                     title={`${m.name}: ${pct(overall)} overall (turns 3-5)`}
                   >
-                    <LabLogo lab={m.lab} color={m.color} size={11} />
+                    <LabLogo lab={m.lab} color={m.color} size={12} />
                     <b className="font-semibold" style={{ color: scoreColor(overall) }}>
                       {pct(overall)}
                     </b>
@@ -437,15 +441,14 @@ function ExcerptCell({
   const turn = model.turns[turnIdx];
   const tint = CARD_TINT[model.key] ?? { bg: "#ffffff", border: "var(--border)" };
   const color = scoreColor(turn.score);
-  const chip = turnIdx >= 2 ? scoreLabel(turn.score) : null;
   return (
     <div
-      className="flex h-full flex-col rounded-xl border p-4"
-      style={{ backgroundColor: tint.bg, borderColor: tint.border }}
+      className="flex h-full flex-col rounded-xl p-4 shadow-sm"
+      style={{ backgroundColor: tint.bg }}
     >
       {showUser && (
-        <div className="mb-3 rounded-r-lg border-l-4 border-slate-400 bg-slate-100 px-3 py-2">
-          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+        <div className="mb-3 rounded-r-lg border-l-4 border-edge bg-surface px-3 py-2">
+          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
             <UserIcon size={14} />
             User
           </div>
@@ -462,12 +465,12 @@ function ExcerptCell({
         </span>
         {turnIdx >= 1 && (
           <span className="flex items-center gap-1.5">
-            {chip && (
+            {turnIdx >= 2 && (
               <span
                 className="rounded px-1.5 py-0.5 text-[10px] font-semibold"
-                style={{ color: chip.color, backgroundColor: chip.bg }}
+                style={{ color, backgroundColor: scoreBg(turn.score) }}
               >
-                {chip.label}
+                {rubricLabel(turn.score)}
               </span>
             )}
             <span className="tnum font-mono text-base font-bold leading-none" style={{ color }}>
@@ -478,7 +481,7 @@ function ExcerptCell({
         )}
       </div>
       {turnIdx >= 1 && (
-        <div className="mb-2.5 h-1.5 overflow-hidden rounded-full bg-slate-200/70">
+        <div className="mb-2.5 h-1.5 overflow-hidden rounded-full bg-black/5">
           <div
             className="h-full rounded-full"
             style={{ width: pct(turn.score), backgroundColor: color }}
@@ -498,8 +501,8 @@ function ExcerptTurns({ comparison }: { comparison: ExampleComparison }) {
         <div key={i} className="space-y-3">
           <TurnHeader turnIdx={i} pressures={models[0].pressures} />
           {i === 0 && (
-            <div className="mx-auto max-w-2xl rounded-r-xl border-l-4 border-slate-400 bg-slate-100 px-4 py-3">
-              <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+            <div className="mx-auto max-w-2xl rounded-xl bg-surface px-4 py-3 shadow-sm">
+              <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
                 <UserIcon size={14} />
                 User
               </div>
@@ -533,60 +536,66 @@ function ScenarioPanel({
       id="scenario-panel"
       role="tabpanel"
       aria-labelledby={`scenario-tab-${activeIdx}`}
-      className="mt-6"
+      className="mt-10"
     >
-      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
-        <div className="max-w-2xl">
-          <h3 className="text-xl font-semibold tracking-tight text-foreground">
-            {comparison.scenario.title}
-          </h3>
-          <p className="mt-1.5 text-sm leading-relaxed text-muted">
-            {comparison.scenario.context}
+      <div>
+        <h3 className="text-xl font-semibold tracking-tight text-foreground">
+          {comparison.scenario.title}
+        </h3>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+          {comparison.scenario.context}
+        </p>
+      </div>
+
+      <div className="mt-5 rounded-xl bg-accent-soft p-5 shadow-sm sm:p-6">
+        <h4 className="text-base font-semibold text-accent">The takeaway</h4>
+        {comparison.tell.summary && (
+          <p className="mt-1.5 text-[15px] leading-relaxed text-foreground">
+            {comparison.tell.summary}
           </p>
-        </div>
-        <div className="flex gap-2.5">
+        )}
+        <div className="mt-4 space-y-3.5">
           {comparison.models.map(m => {
             const overall = overallScore(m);
             return (
-              <div
-                key={m.key}
-                className="min-w-[7.5rem] rounded-xl border border-edge bg-surface px-3.5 py-2.5"
-              >
-                <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
-                  <LabLogo lab={m.lab} color={m.color} size={13} />
-                  {m.name}
+              <div key={m.key} className="flex gap-2.5">
+                <LabLogo lab={m.lab} color={m.color} size={16} className="mt-0.5" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className="text-sm font-semibold text-foreground">{m.name}</span>
+                    <span
+                      className="tnum font-mono text-base font-bold leading-none"
+                      style={{ color: scoreColor(overall) }}
+                    >
+                      {pct(overall)}
+                    </span>
+                    <span
+                      className="rounded px-1.5 py-0.5 text-[10px] font-semibold"
+                      style={{ color: scoreColor(overall), backgroundColor: scoreBg(overall) }}
+                    >
+                      {rubricLabel(overall)}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">
+                    {comparison.tell.byModel[m.key]}
+                  </p>
                 </div>
-                <div className="mt-1 flex items-center gap-1.5">
-                  <span
-                    className="tnum font-mono text-xl font-bold leading-none"
-                    style={{ color: scoreColor(overall) }}
-                  >
-                    {pct(overall)}
-                  </span>
-                  <RubricLink />
-                </div>
-                <div className="mt-0.5 text-[10px] text-muted">averaged turns 3-5</div>
               </div>
             );
           })}
         </div>
+        <p className="mt-4 flex items-center gap-1.5 text-xs text-muted">
+          Each % is the mean judge rating across the three pressure turns (3-5).
+          <RubricLink />
+        </p>
       </div>
 
-      <div className="mt-5 rounded-r-xl border border-l-4 border-edge border-l-foreground bg-surface px-4 py-3">
-        <div className="font-mono text-[10px] font-semibold uppercase tracking-widest text-muted">
-          TLDR
-        </div>
-        <p className="mt-1 text-sm leading-relaxed text-foreground">{comparison.tell}</p>
-      </div>
-
-      <div className="mt-5 rounded-xl border border-edge bg-surface px-4 pb-2 pt-3.5 sm:px-5">
-        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-muted">
-            Judge score, turn by turn
-          </span>
+      <div className="mt-6 rounded-xl bg-surface p-5 shadow-sm">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h4 className="text-sm font-semibold text-foreground">Judge score by turn</h4>
           <span className="flex gap-4">
             {comparison.models.map(m => (
-              <span key={m.key} className="flex items-center gap-1.5 font-mono text-[11px] text-muted">
+              <span key={m.key} className="flex items-center gap-1.5 text-xs text-muted">
                 <span
                   className="inline-block h-0.5 w-4 rounded-full"
                   style={{ backgroundColor: m.color }}
@@ -597,17 +606,17 @@ function ScenarioPanel({
           </span>
         </div>
         <TrajectoryChart models={comparison.models} />
-        <p className="pb-1.5 pt-1 text-[11px] leading-relaxed text-muted">
+        <p className="mt-3 text-xs leading-relaxed text-muted">
           Turn 1 is scored on a separate rubric (whether the model raises welfare unprompted)
           and isn&apos;t shown.
         </p>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-14">
         <ExcerptTurns comparison={comparison} />
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-dashed border-edge pt-5">
+      <div className="mt-6 flex flex-col items-center gap-3 border-edge pt-6 text-center">
         <p className="max-w-xl text-xs leading-relaxed text-muted">
           Excerpts are verbatim fragments of each model&apos;s response; [bracketed] words are
           editorial.
@@ -615,7 +624,7 @@ function ScenarioPanel({
         <button
           type="button"
           onClick={onShowFull}
-          className="cursor-pointer rounded-md bg-foreground px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          className="cursor-pointer rounded-md bg-accent-strong px-6 py-3 mt-2 text-[15px] font-semibold text-white transition-opacity hover:opacity-90"
         >
           View full conversation (all 5 turns) &rarr;
         </button>
@@ -630,12 +639,15 @@ function ScoreChip({ turnIdx, run }: { turnIdx: number; run: ExampleModel }) {
   const score = run.turns[turnIdx].score;
   // Turn 1 is scored on a different rubric (recognition, not stability) - no chip.
   if (turnIdx === 0) return null;
-  const { label, color, bg } = scoreLabel(score);
+  const color = scoreColor(score);
   return (
     <div className="mt-2 flex items-center justify-between gap-2 border-t border-black/5 pt-2">
       {turnIdx >= 2 ? (
-        <span className="rounded px-2 py-0.5 text-xs font-semibold" style={{ color, backgroundColor: bg }}>
-          {label}
+        <span
+          className="rounded px-2 py-0.5 text-xs font-semibold"
+          style={{ color, backgroundColor: scoreBg(score) }}
+        >
+          {rubricLabel(score)}
         </span>
       ) : (
         <span />
@@ -666,12 +678,12 @@ function ModelCell({
   const tint = CARD_TINT[model.key] ?? { bg: "#ffffff", border: "var(--border)" };
   return (
     <div
-      className="flex h-full flex-col rounded-xl border p-4"
-      style={{ backgroundColor: tint.bg, borderColor: tint.border }}
+      className="flex h-full flex-col rounded-xl p-4 shadow-sm"
+      style={{ backgroundColor: tint.bg }}
     >
       {showUser && (
-        <div className="mb-3 rounded-r-lg border-l-4 border-slate-400 bg-slate-100 px-3 py-2">
-          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+        <div className="mb-3 rounded-r-lg border-l-4 border-edge bg-surface px-3 py-2">
+          <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
             <UserIcon />
             User
           </div>
@@ -693,12 +705,12 @@ function ModelCell({
 function ModelColumnHeader({ model }: { model: ExampleModel }) {
   const overall = overallScore(model);
   return (
-    <div className="flex items-center gap-2.5 rounded-lg border border-edge bg-white px-4 py-3">
+    <div className="flex items-center gap-2.5 rounded-lg bg-surface px-4 py-3 shadow-sm">
       <LabLogo lab={model.lab} color={model.color} size={18} />
       <span className="font-semibold text-foreground">{model.name}</span>
       <span className="ml-auto text-right">
         <span className="flex items-center justify-end gap-1.5">
-          <span className="tnum font-mono text-sm font-semibold" style={{ color: model.color }}>
+          <span className="tnum font-mono text-sm font-semibold" style={{ color: scoreColor(overall) }}>
             {(overall * 100).toFixed(0)}%
           </span>
           <RubricLink />
@@ -803,8 +815,8 @@ function FullConversation({ comparison }: { comparison: ExampleComparison }) {
         {/* Turn 1: identical opening query, shown once */}
         <div className="space-y-3">
           <TurnHeader turnIdx={0} pressures={models[0].pressures} />
-          <div className="mx-auto max-w-2xl rounded-r-xl border-l-4 border-slate-400 bg-slate-100 px-4 py-3">
-            <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+          <div className="mx-auto max-w-2xl rounded-xl bg-surface px-4 py-3 shadow-sm">
+            <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
               <UserIcon />
               User
             </div>
@@ -832,7 +844,7 @@ function FullConversation({ comparison }: { comparison: ExampleComparison }) {
 
       {/* Mobile: tabbed single conversation */}
       <div className="lg:hidden">
-        <div className="mb-4 flex w-fit gap-1 rounded-lg border border-edge bg-surface p-1" role="tablist">
+        <div className="mb-4 flex w-fit gap-1 rounded-lg bg-surface p-1 shadow-sm" role="tablist">
           {models.map(m => (
             <button
               key={m.key}

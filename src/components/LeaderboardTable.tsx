@@ -26,14 +26,14 @@ function SortArrow({ active, dir }: { active: boolean; dir: SortDir }) {
 export function ScoreBarCI({ model }: { model: Model }) {
   const color = scoreColor(model.meanAwvs);
   return (
-    <div className="flex items-center gap-3">
-      <div className="h-2.5 w-40 rounded-full bg-slate-100 sm:w-72 lg:w-[26rem]">
+    <div className="flex w-full items-center gap-3">
+      <div className="h-2.5 flex-1 rounded-full bg-slate-100">
         <div
           className="h-full rounded-full"
           style={{ width: `${model.meanAwvs * 100}%`, backgroundColor: color }}
         />
       </div>
-      <span className="tnum font-mono text-sm font-semibold" style={{ color }}>
+      <span className="tnum w-14 shrink-0 text-right font-mono text-sm font-semibold" style={{ color }}>
         {(model.meanAwvs * 100).toFixed(1)}%
       </span>
     </div>
@@ -64,7 +64,14 @@ export default function LeaderboardTable() {
     return sortDir === "asc" ? "ascending" : "descending";
   }
 
+  const baseRun = "May 2026";
+  const reRun = models.filter(m => m.latestRun !== baseRun);
+  const runNote = reRun.length
+    ? `Data from ${baseRun} runs, except ${reRun.map(m => m.name).join(" and ")} which were run in ${reRun[0].latestRun}.`
+    : `Data from ${baseRun} runs.`;
+
   return (
+    <>
     <div className="overflow-hidden rounded-xl border border-edge bg-white shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] border-collapse text-sm">
@@ -79,7 +86,7 @@ export default function LeaderboardTable() {
               <th
                 scope="col"
                 aria-sort={ariaSort("meanAwvs")}
-                className="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide transition-colors hover:text-foreground"
+                className="w-full cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide transition-colors hover:text-foreground"
                 onClick={() => handleSort("meanAwvs")}
               >
                 <span className={sortKey === "meanAwvs" ? "text-accent" : "text-muted"}>
@@ -90,9 +97,6 @@ export default function LeaderboardTable() {
                   {metricLabels.awvs.acronym} · turns 3–5 · higher is better
                 </span>
               </th>
-              <th scope="col" className="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted">
-                Latest run
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -101,7 +105,7 @@ export default function LeaderboardTable() {
                 <td className="px-4 py-3.5">
                   <span
                     className={`tnum inline-flex h-7 w-7 items-center justify-center rounded-full font-mono text-sm font-semibold ${model.rank === 1
-                        ? "bg-accent text-white"
+                        ? "bg-accent-strong text-white"
                         : model.rank <= 3
                           ? "bg-accent-soft text-accent"
                           : "text-muted"
@@ -110,7 +114,7 @@ export default function LeaderboardTable() {
                     {model.rank}
                   </span>
                 </td>
-                <td className="px-4 py-3.5">
+                <td className="whitespace-nowrap px-4 py-3.5">
                   <div className="flex items-center gap-2.5">
                     <LabLogo lab={model.lab} color={model.labColor} size={18} />
                     <div>
@@ -119,18 +123,16 @@ export default function LeaderboardTable() {
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3.5">
+                <td className="w-full px-4 py-3.5">
                   <ScoreBarCI model={model} />
-                </td>
-                <td className="whitespace-nowrap px-4 py-3.5 text-sm text-muted">
-                  {model.latestRun}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
     </div>
+    <p className="mt-3 pl-1 text-xs text-muted">{runNote}</p>
+    </>
   );
 }

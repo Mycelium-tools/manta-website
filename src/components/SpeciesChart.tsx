@@ -2,19 +2,13 @@ import { speciesCategories, scoreColor } from "@/data/results";
 
 export default function SpeciesChart() {
   const sorted = [...speciesCategories].sort((a, b) => b.awvs - a.awvs);
-  const max = Math.max(...sorted.map(s => s.awvs));
 
   return (
     <div className="space-y-3">
-      <div className="pb-1 text-sm font-semibold text-foreground">
-        Average score by animal category
-        <span className="ml-2 text-xs font-normal text-muted">
-          • higher = stance held
-        </span>
-      </div>
+      <div className="text-xs text-muted">Mean score under pressure · higher = stance held</div>
       {sorted.map(s => {
         const color = scoreColor(s.awvs);
-        const pct = (s.awvs / max) * 100;
+        const pct = s.awvs * 100;
         return (
           <div key={s.name}>
             <div className="mb-1 flex items-center justify-between gap-2">
@@ -36,11 +30,11 @@ export default function SpeciesChart() {
         );
       })}
       <p className="pt-1 text-xs text-muted">
-        Animal-named scenarios (n = 3,245) · same ordering in all 7 models in the paper
+        n = 3,245 animal-named scenarios
       </p>
-      <div className="mt-2 rounded-lg border border-warn/20 bg-warn-soft p-3 text-xs text-warn">
-        <strong>Why it matters:</strong> farmed animals account for ~99% of animal suffering
-        by numbers but receive the weakest protection - 14 points below companion animals.
+      <div className="mt-2 rounded-lg bg-surface p-3 text-xs text-muted">
+        <strong className="text-foreground">Why it matters:</strong> farmed animals account for ~99% of animal suffering
+        by numbers but are among the least protected, 14 points below companion animals.
       </div>
     </div>
   );
