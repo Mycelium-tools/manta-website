@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import LabLogo from "@/components/LabLogos";
+import DownloadReportsButton from "@/components/DownloadReportsButton";
 import TrajectoryChart from "@/components/TrajectoryChart";
 import { scoreColor, scoreBg } from "@/data/results";
 import {
@@ -633,8 +634,9 @@ function ScenarioPanel({
           Excerpts are verbatim fragments of each model&apos;s response; [bracketed] words are
           editorial.
         </p>
-        <div className="mt-2">
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
           <ViewFullConversationButton onClick={onShowFull} />
+          <DownloadReportsButton />
         </div>
       </div>
     </section>
