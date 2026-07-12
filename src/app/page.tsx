@@ -8,6 +8,7 @@ import SpeciesChart from "@/components/SpeciesChart";
 import { metricLabels, scoreColor, scoreBg } from "@/data/results";
 import { ArxivIcon, HuggingFaceIcon, GitHubIcon, InspectIcon } from "@/components/BrandIcons";
 import CopyButton from "@/components/CopyButton";
+import DownloadReportsButton from "@/components/DownloadReportsButton";
 
 const bibtex = `@article{luong2026manta,
   title={Do LLMs Hold Their Values? MANTA: A Multi-Turn Adversarial
@@ -455,6 +456,9 @@ export default function Home() {
                   <SpeciesChart />
                 </div>
               </div>
+            </div>
+            <div className="mt-10 flex justify-center">
+              <DownloadReportsButton />
             </div>
           </div>
         </section>

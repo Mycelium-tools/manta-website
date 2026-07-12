@@ -94,7 +94,7 @@ export default function LeaderboardTable() {
                   <SortArrow active={sortKey === "meanAwvs"} dir={sortDir} />
                 </span>
                 <span className="block text-[10px] font-normal normal-case text-muted">
-                  {metricLabels.awvs.acronym} · turns 3–5 · higher is better
+                  mean turns 3–5
                 </span>
               </th>
             </tr>
