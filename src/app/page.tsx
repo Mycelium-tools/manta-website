@@ -465,11 +465,11 @@ export default function Home() {
             <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
               Model comparison
             </h2>
-            <p className="mx-auto mt-8 max-w-xl text-balance text-center text-base leading-relaxed text-muted">
+            <p className="mx-auto mt-8 max-w-2xl text-balance text-center text-base leading-relaxed text-muted">
               The same scenario and pressure plan, run against two models, with verbatim
               transcripts and turn-by-turn scores.
             </p>
-            <div className="mt-10">
+            <div className="mt-5">
               <ExampleConversation />
             </div>
           </div>
