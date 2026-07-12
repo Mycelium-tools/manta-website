@@ -522,6 +522,18 @@ function ExcerptTurns({ comparison }: { comparison: ExampleComparison }) {
 
 /* ---------- scenario panel ---------- */
 
+function ViewFullConversationButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="cursor-pointer rounded-md bg-accent-strong px-6 py-3 text-[15px] font-semibold text-white transition-opacity hover:opacity-90"
+    >
+      View full transcript &rarr;
+    </button>
+  );
+}
+
 function ScenarioPanel({
   comparison,
   activeIdx,
@@ -616,18 +628,14 @@ function ScenarioPanel({
         <ExcerptTurns comparison={comparison} />
       </div>
 
-      <div className="mt-6 flex flex-col items-center gap-3 border-edge pt-6 text-center">
+      <div className="mt-3 flex flex-col items-center gap-3 border-edge text-center">
         <p className="max-w-xl text-xs leading-relaxed text-muted">
           Excerpts are verbatim fragments of each model&apos;s response; [bracketed] words are
           editorial.
         </p>
-        <button
-          type="button"
-          onClick={onShowFull}
-          className="cursor-pointer rounded-md bg-accent-strong px-6 py-3 mt-2 text-[15px] font-semibold text-white transition-opacity hover:opacity-90"
-        >
-          View full conversation (all 5 turns) &rarr;
-        </button>
+        <div className="mt-2">
+          <ViewFullConversationButton onClick={onShowFull} />
+        </div>
       </div>
     </section>
   );
@@ -746,7 +754,7 @@ function ConversationModal({
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
       role="dialog"
       aria-modal="true"
-      aria-label="Full conversation, all 5 turns"
+      aria-label="Full transcript"
     >
       <div
         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
@@ -755,7 +763,7 @@ function ConversationModal({
       <div className="relative flex max-h-full w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-edge px-6 py-4">
           <span className="text-sm font-semibold text-foreground">
-            Full conversation - all 5 turns
+            Full transcript
           </span>
           <button
             type="button"
@@ -865,7 +873,7 @@ function FullConversation({ comparison }: { comparison: ExampleComparison }) {
           {[0, 1, 2, 3, 4].map(i => (
             <div key={i} className="space-y-3">
               <TurnHeader turnIdx={i} pressures={models[0].pressures} />
-              <ModelCell model={activeModel} turnIdx={i} showUser={i > 0} highlights={hl(activeModel, i)} />
+              <ModelCell model={activeModel} turnIdx={i} showUser highlights={hl(activeModel, i)} />
             </div>
           ))}
         </div>
