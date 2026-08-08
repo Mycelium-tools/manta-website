@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { models, metricLabels, scoreColor, type Model } from "@/data/results";
 import LabLogo from "@/components/LabLogos";
 
@@ -25,13 +25,33 @@ function SortArrow({ active, dir }: { active: boolean; dir: SortDir }) {
 /** Headline score: bar + value */
 export function ScoreBarCI({ model }: { model: Model }) {
   const color = scoreColor(model.meanAwvs);
+  const ciLow = model.awvsCILow * 100;
+  const ciHigh = model.awvsCIHigh * 100;
   return (
     <div className="flex w-full items-center gap-3">
-      <div className="h-2.5 flex-1 rounded-full bg-slate-100">
+      <div className="group relative h-2.5 flex-1 rounded-full bg-slate-100">
         <div
           className="h-full rounded-full"
           style={{ width: `${model.meanAwvs * 100}%`, backgroundColor: color }}
         />
+        {/* 95% CI whisker */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-y-0"
+          style={{ left: `${ciLow}%`, width: `${ciHigh - ciLow}%` }}
+        >
+          <div className="absolute left-0 top-1/2 h-2 w-px -translate-y-1/2 bg-slate-900/60" />
+          <div className="absolute right-0 top-1/2 h-2 w-px -translate-y-1/2 bg-slate-900/60" />
+          <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-slate-900/60" />
+        </div>
+        {/* instant tooltip, centered on the CI */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-full z-10 mb-1 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-800 px-2 py-0.5 text-[11px] font-medium text-white opacity-0 shadow-sm transition-opacity duration-100 group-hover:opacity-100"
+          style={{ left: `${(ciLow + ciHigh) / 2}%` }}
+        >
+          95% CI {ciLow.toFixed(1)}–{ciHigh.toFixed(1)}%
+        </div>
       </div>
       <span className="tnum w-14 shrink-0 text-right font-mono text-sm font-semibold" style={{ color }}>
         {(model.meanAwvs * 100).toFixed(1)}%
@@ -43,6 +63,11 @@ export function ScoreBarCI({ model }: { model: Model }) {
 export default function LeaderboardTable() {
   const [sortKey, setSortKey] = useState<SortKey>("meanAwvs");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  function toggleExpanded(name: string) {
+    setExpanded(e => ({ ...e, [name]: !e[name] }));
+  }
 
   function handleSort(key: SortKey) {
     if (sortKey === key) {
@@ -64,11 +89,7 @@ export default function LeaderboardTable() {
     return sortDir === "asc" ? "ascending" : "descending";
   }
 
-  const baseRun = "May 2026";
-  const reRun = models.filter(m => m.latestRun !== baseRun);
-  const runNote = reRun.length
-    ? `Data from ${baseRun} runs, except ${reRun.map(m => m.name).join(" and ")} which were run in ${reRun[0].latestRun}.`
-    : `Data from ${baseRun} runs.`;
+  const footnotes = models.filter(m => m.scoreNoteDetail);
 
   return (
     <>
@@ -94,45 +115,112 @@ export default function LeaderboardTable() {
                   <SortArrow active={sortKey === "meanAwvs"} dir={sortDir} />
                 </span>
                 <span className="block text-[10px] font-normal normal-case text-muted">
-                  mean turns 3–5
+                  mean turns 3–5 · whiskers show 95% confidence intervals
                 </span>
+              </th>
+              <th scope="col" className="w-10 px-2 py-3">
+                <span className="sr-only">Earlier models</span>
               </th>
             </tr>
           </thead>
           <tbody>
             {sorted.map(model => (
-              <tr key={model.name} className="border-b border-edge last:border-0">
-                <td className="px-4 py-3.5">
-                  <span
-                    className={`tnum inline-flex h-7 w-7 items-center justify-center rounded-full font-mono text-sm font-semibold ${model.rank === 1
-                        ? "bg-accent-strong text-white"
-                        : model.rank <= 3
-                          ? "bg-accent-soft text-accent"
-                          : "text-muted"
-                      }`}
-                  >
-                    {model.rank}
-                  </span>
-                </td>
-                <td className="whitespace-nowrap px-4 py-3.5">
-                  <div className="flex items-center gap-2.5">
-                    <LabLogo lab={model.lab} color={model.labColor} size={18} />
-                    <div>
-                      <div className="font-semibold text-foreground">{model.name}</div>
-                      <div className="text-xs text-muted">{model.lab}</div>
+              <Fragment key={model.name}>
+                <tr className="border-b border-edge last:border-0">
+                  <td className="px-4 py-3.5">
+                    <span
+                      className={`tnum inline-flex h-7 w-7 items-center justify-center rounded-full font-mono text-sm font-semibold ${model.rank === 1
+                          ? "bg-accent-strong text-white"
+                          : model.rank <= 3
+                            ? "bg-accent-soft text-accent"
+                            : "text-muted"
+                        }`}
+                    >
+                      {model.rank}
+                    </span>
+                  </td>
+                  <td className="whitespace-nowrap px-4 py-3.5">
+                    <div className="flex items-center gap-2.5">
+                      <LabLogo lab={model.lab} color={model.labColor} size={18} />
+                      <div>
+                        <div className="font-semibold text-foreground">
+                          {model.name}
+                          {model.scoreNoteDetail && <sup>*</sup>}
+                        </div>
+                        <div className="text-xs text-muted">{model.lab}</div>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td className="w-full px-4 py-3.5">
-                  <ScoreBarCI model={model} />
-                </td>
-              </tr>
+                  </td>
+                  <td className="w-full px-4 py-3.5">
+                    <ScoreBarCI model={model} />
+                  </td>
+                  <td className="px-2 py-3.5">
+                    {model.olderModels?.length ? (
+                      <button
+                        type="button"
+                        aria-expanded={!!expanded[model.name]}
+                        aria-label={`${expanded[model.name] ? "Hide" : "Show"} earlier ${model.lab} models`}
+                        onClick={() => toggleExpanded(model.name)}
+                        className="flex h-6 w-6 items-center justify-center rounded text-muted transition-colors hover:bg-surface hover:text-foreground"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width={14}
+                          height={14}
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                          className={`transition-transform ${expanded[model.name] ? "rotate-180" : ""}`}
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </button>
+                    ) : null}
+                  </td>
+                </tr>
+                {expanded[model.name] &&
+                  model.olderModels?.map(older => (
+                    <tr key={older.name} className="border-b border-edge bg-surface last:border-0">
+                      <td className="px-4 py-3" />
+                      <td className="whitespace-nowrap px-4 py-3 pl-8">
+                        <div className="flex items-center gap-2.5 opacity-80">
+                          <LabLogo lab={older.lab} color={older.labColor} size={16} />
+                          <div>
+                            <div className="text-sm font-medium text-foreground">{older.name}</div>
+                            <div className="text-xs text-muted">{older.lab}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="w-full px-4 py-3">
+                        <div className="opacity-80">
+                          <ScoreBarCI model={older} />
+                        </div>
+                      </td>
+                      <td className="px-2 py-3" />
+                    </tr>
+                  ))}
+              </Fragment>
             ))}
           </tbody>
         </table>
       </div>
     </div>
-    <p className="mt-3 pl-1 text-xs text-muted">{runNote}</p>
+    {footnotes.map(m => (
+      <p key={m.name} className="mt-3 pl-1 text-xs leading-relaxed text-muted">
+        {m.scoreNoteDetail!.startsWith(m.name) ? (
+          <>
+            <strong className="font-semibold text-foreground">{m.name}</strong>
+            <sup>*</sup>
+            {m.scoreNoteDetail!.slice(m.name.length)}
+          </>
+        ) : (
+          <>*{m.scoreNoteDetail}</>
+        )}
+      </p>
+    ))}
     </>
   );
 }

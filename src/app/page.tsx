@@ -457,6 +457,10 @@ export default function Home() {
                 </div>
               </div>
             </div>
+            <p className="mt-4 text-center text-xs text-muted">
+              The two analyses above are pooled across the seven models evaluated in
+              the paper, not the current leaderboard.
+            </p>
             <div className="mt-10 flex justify-center">
               <DownloadReportsButton />
             </div>
@@ -546,7 +550,7 @@ export default function Home() {
                   },
                   {
                     title: "One judge per conversation",
-                    desc: "Claude Sonnet 4.6 judges six models; GPT-5.4 judges Claude Opus 4.7 to avoid self-preference bias. Judge-harshness differences between the two judges can't be fully ruled out. Ideal setup would use a PoLL (panel of LLM judges).",
+                    desc: "Claude Sonnet 4.6 judges the non-Claude models; GPT-5.4 judges the Claude models to avoid self-preference bias. Judge-harshness differences between the two judges can't be fully ruled out. Ideal setup would use a PoLL (panel of LLM judges).",
                   },
                 ].map(item => (
                   <div key={item.title} className="flex flex-col gap-1 py-3 sm:flex-row sm:gap-6">
