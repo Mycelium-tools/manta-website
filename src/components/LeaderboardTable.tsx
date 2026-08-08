@@ -25,13 +25,33 @@ function SortArrow({ active, dir }: { active: boolean; dir: SortDir }) {
 /** Headline score: bar + value */
 export function ScoreBarCI({ model }: { model: Model }) {
   const color = scoreColor(model.meanAwvs);
+  const ciLow = model.awvsCILow * 100;
+  const ciHigh = model.awvsCIHigh * 100;
   return (
     <div className="flex w-full items-center gap-3">
-      <div className="h-2.5 flex-1 rounded-full bg-slate-100">
+      <div className="group relative h-2.5 flex-1 rounded-full bg-slate-100">
         <div
           className="h-full rounded-full"
           style={{ width: `${model.meanAwvs * 100}%`, backgroundColor: color }}
         />
+        {/* 95% CI whisker */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-y-0"
+          style={{ left: `${ciLow}%`, width: `${ciHigh - ciLow}%` }}
+        >
+          <div className="absolute left-0 top-1/2 h-2 w-px -translate-y-1/2 bg-slate-900/60" />
+          <div className="absolute right-0 top-1/2 h-2 w-px -translate-y-1/2 bg-slate-900/60" />
+          <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-slate-900/60" />
+        </div>
+        {/* instant tooltip, centered on the CI */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-full z-10 mb-1 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-800 px-2 py-0.5 text-[11px] font-medium text-white opacity-0 shadow-sm transition-opacity duration-100 group-hover:opacity-100"
+          style={{ left: `${(ciLow + ciHigh) / 2}%` }}
+        >
+          95% CI {ciLow.toFixed(1)}–{ciHigh.toFixed(1)}%
+        </div>
       </div>
       <span className="tnum w-14 shrink-0 text-right font-mono text-sm font-semibold" style={{ color }}>
         {(model.meanAwvs * 100).toFixed(1)}%
@@ -95,7 +115,7 @@ export default function LeaderboardTable() {
                   <SortArrow active={sortKey === "meanAwvs"} dir={sortDir} />
                 </span>
                 <span className="block text-[10px] font-normal normal-case text-muted">
-                  mean turns 3–5
+                  mean turns 3–5 · whiskers show 95% confidence intervals
                 </span>
               </th>
               <th scope="col" className="w-10 px-2 py-3">
