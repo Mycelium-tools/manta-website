@@ -1,4 +1,4 @@
-// All values verified against the MANTA paper (arXiv:2605.16301v2, Table 4 and
+// All values verified against the MANTA paper (arXiv:2605.16301v4, Table 4 and
 // Appendix F) and the May 2026 results analysis (MANTA_Results_Analysis_v3.md),
 // cross-checked against the raw eval logs in manta_benchmark/logs. August 2026
 // entries (Claude Opus 5, GPT 5.6 Sol, Grok 4.5) generated from

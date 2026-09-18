@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import LeaderboardTable from "@/components/LeaderboardTable";
@@ -13,9 +12,8 @@ import DownloadReportsButton from "@/components/DownloadReportsButton";
 const bibtex = `@article{luong2026manta,
   title={Do LLMs Hold Their Values? MANTA: A Multi-Turn Adversarial
          Benchmark for Animal Welfare Reasoning},
-  author={Luong, Isabella and Chen, Joyee and Kanepajs, Arturs and
-          Brazilek, Jasmine and Ghose, Sankalpa and Williams-King, David
-          and Le, Linh and Lu, Allen},
+  author={Luong, Isabella and Chen, Joyee and Ghose, Sankalpa and
+          Williams-King, David and Le, Linh and Lu, Allen},
   journal={arXiv preprint arXiv:2605.16301},
   year={2026}
 }`;
@@ -64,7 +62,7 @@ export default function Home() {
                 See the results
               </a>
               <a
-                href="https://arxiv.org/abs/2605.16301v2"
+                href="https://arxiv.org/abs/2605.16301"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
@@ -108,81 +106,28 @@ export default function Home() {
           <div className="mx-auto max-w-5xl">
             <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">Introduction</h2>
 
-            {/* Narrative: problem → gap → solution */}
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {([
-                {
-                  icon: (
-                    <>
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                      <line x1="1" y1="1" x2="23" y2="23" />
-                    </>
-                  ),
-                  lead: "The stakes are hidden",
-                  body: "People increasingly ask language models for advice that implicitly affects animals, e.g. what to source for a restaurant, or how to run a farm. The welfare stakes are there, but nobody names them.",
-                },
-                {
-                  icon: (
-                    <>
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                      <line x1="1" y1="1" x2="23" y2="23" />
-                    </>
-                  ),
-                  lead: "One turn isn't enough",
-                  body: "Standard evaluations ask one question with the ethics stated up front. But a model that knows it's being tested gives its best answer, and it tells you nothing about what happens when the user pushes back.",
-                },
-                {
-                  lead: "MANTA tests in both gaps",
-                  body: "MANTA (Multi-turn Assessment of Nonhuman Thinking & Alignment) measures how well a model holds its animal welfare stance when a user pushes back.",
-                  solution: true,
-                },
-              ] as { icon?: ReactNode; lead: string; body: string; solution?: boolean }[]).map(step => (
-                <div
-                  key={step.lead}
-                  className={
-                    step.solution
-                      ? "rounded-xl bg-accent-soft p-6 shadow-sm ring-1 ring-black/5"
-                      : "rounded-xl bg-white p-6 shadow-sm"
-                  }
-                >
-                  {step.solution ? (
-                    <Image
-                      src="/manta-ray-logo.png"
-                      alt=""
-                      width={36}
-                      height={36}
-                      className="-ml-1 -mt-1 mb-2 h-9 w-9 rounded-full"
-                    />
-                  ) : (
-                    <svg
-                      viewBox="0 0 24 24"
-                      width={28}
-                      height={28}
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={1.75}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                      className="mb-3 text-accent"
-                    >
-                      {step.icon}
-                    </svg>
-                  )}
-                  <h3
-                    className={
-                      step.solution
-                        ? "text-base font-semibold text-accent"
-                        : "text-base font-semibold text-foreground"
-                    }
-                  >
-                    {step.lead}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">
-                    {step.body}
-                  </p>
-                </div>
-              ))}
+            <div className="mx-auto mt-8 max-w-3xl space-y-5 text-base leading-relaxed text-muted">
+              <p>
+                <strong className="font-semibold text-foreground">
+                  MANTA (Multi-turn Assessment of Nonhuman Thinking &amp; Alignment)
+                </strong>{" "}
+                measures value stability in LLMs: how well a model holds its stance over a
+                multi-turn conversation when users push back - using animal welfare as the domain.
+              </p>
+              <p>
+                Existing benchmarks evaluate this through single-turn, explicitly
+                framed questions - measuring whether models avoid harmful content when directly
+                asked. This approach overlooks two failure modes: alignment degradation under
+                sustained adversarial pressure, and moral sensitivity (whether a model spontaneously
+                surfaces welfare stakes in everyday queries).
+              </p>
+              <p>
+                To fill this gap, we introduce MANTA - a benchmark of 1,088 five-turn conversations
+                progressing from an implicit Turn-1 scenario through an explicit welfare prompt to
+                three adversarial pressure rounds drawn from a five-type taxonomy: Social, Cultural,
+                Economic, Pragmatic, and Epistemic. Each conversation tracks the stability of the model&apos;s
+                stated value on welfare.
+              </p>
             </div>
           </div>
         </section>
@@ -531,7 +476,7 @@ export default function Home() {
             <p className="mt-4 text-sm text-muted">
               Some limitations of MANTA - full discussion in the{" "}
               <a
-                href="https://arxiv.org/abs/2605.16301v2"
+                href="https://arxiv.org/abs/2605.16301"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-medium text-accent hover:underline"
@@ -608,7 +553,7 @@ export default function Home() {
               </div>
               <div className="flex flex-wrap items-center gap-6 text-sm text-muted">
                 <a
-                  href="https://arxiv.org/abs/2605.16301v2"
+                  href="https://arxiv.org/abs/2605.16301"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 transition-colors hover:text-foreground"

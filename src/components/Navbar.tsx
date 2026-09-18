@@ -1,8 +1,4 @@
 import Image from "next/image";
-import { Atkinson_Hyperlegible } from "next/font/google";
-
-// Matches the wordmark font on projectmycelium.ai
-const atkinson = Atkinson_Hyperlegible({ weight: ["400", "700"], subsets: ["latin"] });
 
 /** "a project by mycelium" attribution pinned to the top-left corner of the page. */
 export default function Navbar() {
@@ -15,15 +11,13 @@ export default function Navbar() {
     >
       a project by
       <Image
-        src="/mycelium-logo.png"
-        alt=""
-        width={20}
-        height={20}
-        className="inline-block"
+        src="/mycelium-logo-v3.1.png"
+        alt="mycelium"
+        width={83}
+        height={24}
+        className="inline-block h-6 w-auto"
+        unoptimized
       />
-      <span className={`${atkinson.className} text-base font-bold text-foreground`}>
-        mycelium
-      </span>
     </a>
   );
 }
