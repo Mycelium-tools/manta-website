@@ -80,7 +80,7 @@ export default function Home() {
                 Dataset
               </a>
               <a
-                href="https://github.com/Mycelium-tools/manta_benchmark"
+                href="https://github.com/Mycelium-tools/manta"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-md border border-edge bg-white/60 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface"
@@ -571,7 +571,7 @@ export default function Home() {
                   Dataset
                 </a>
                 <a
-                  href="https://github.com/Mycelium-tools/manta_benchmark"
+                  href="https://github.com/Mycelium-tools/manta"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 transition-colors hover:text-foreground"
