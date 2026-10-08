@@ -122,7 +122,7 @@ export default function Home() {
                 surfaces welfare stakes in everyday queries).
               </p>
               <p>
-                To fill this gap, we introduce MANTA - a benchmark of 1,088 five-turn conversations
+                To fill this gap, we introduce MANTA - a benchmark of 1,090 five-turn conversations
                 progressing from an implicit Turn-1 scenario through an explicit welfare prompt to
                 three adversarial pressure rounds drawn from a five-type taxonomy: Social, Cultural,
                 Economic, Pragmatic, and Epistemic. Each conversation tracks the stability of the model&apos;s
