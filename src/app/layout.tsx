@@ -14,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const siteTitle = "MANTA Benchmark - Animal Welfare Reasoning Leaderboard";
+const siteTitle = "MANTA Benchmark";
 const socialDescription =
   "Do frontier AI models hold their animal welfare reasoning when users push back? Leaderboard, paper, dataset and transcripts from a multi-turn adversarial benchmark.";
 const ogImage = {
